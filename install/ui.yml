@@ -8,14 +8,16 @@ parameters:
   - name: APPLICATION_NAME
     value: scavenger-ui
     required: true
+  - name: ROUTE_NAME
+    value: game
+    required: true
   - name: REPLICAS
     value: "1"
     required: true
   - name: IMAGE_REPOSITORY
     displayName: Image Repository
-    value: quay.io/cfchase/demo4-admin-nginx:latest
+    value: quay.io/cfchase/scavenger-ui:latest
     required: true
-
 
 objects:
   - apiVersion: v1
@@ -68,10 +70,40 @@ objects:
     metadata:
       labels:
         app: ${APPLICATION_NAME}
-      name: game
+      name: ${ROUTE_NAME}
     spec:
       port:
         targetPort: 8080
       to:
         kind: Service
         name: ${APPLICATION_NAME}
+      tls:
+        termination: edge
+        key: |-
+          ${KEY}
+        certificate: |-
+          ${CERTIFICATE}
+        caCertificate: |-
+          ${CA_CERTIFICATE}
+        insecureEdgeTerminationPolicy: Redirect
+      wildcardPolicy: None
+
+#  - kind: Ingress
+#    apiVersion: extensions/v1beta1
+#    metadata:
+#      labels:
+#        app: ${APPLICATION_NAME}
+#      name: ${ROUTE_NAME}
+#    spec:
+#      rules:
+#        - host: game.apps-crc.testing
+#          http:
+#            paths:
+#              - path: /api
+#                backend:
+#                  serviceName: scavenger-service
+#                  servicePort: 8080
+#              - path: /
+#                backend:
+#                  serviceName: scavenger-ui
+#                  servicePort: 8080

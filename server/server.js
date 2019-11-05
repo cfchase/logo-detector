@@ -1,15 +1,19 @@
 'use strict';
 
-const fastify = require('fastify')({
-  logger: true
-});
 const path = require('path');
 const AutoLoad = require('fastify-autoload');
 const env = require("env-var");
 
 const opts = {};
-const PORT = env.get("PORT", "8080").asIntPositive();
-const IP = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || "0.0.0.0";
+const port = env.get("PORT", "8080").asIntPositive();
+const ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || "0.0.0.0";
+const logLevel = env.get("LOG_LEVEL", "info").asString();
+
+const fastify = require('fastify')({
+  logger: {
+    level:  logLevel
+  }
+});
 
 //---------------------
 // Fastify Plugins
@@ -35,7 +39,7 @@ fastify.register(AutoLoad, {
 });
 
 
-fastify.listen(PORT, IP,function (err, address) {
+fastify.listen(port, ip,function (err, address) {
   if (err) {
     fastify.log.error(err);
     process.exit(1)

@@ -1,0 +1,209 @@
+apiVersion: v1
+kind: Template
+
+labels:
+  application: scavenger-api
+
+metadata:
+  name: scavenger-api
+
+parameters:
+  - name: APPLICATION_NAME
+    value: scavenger-api
+    required: true
+  - name: SECRET_NAME
+    value: scavenger
+    required: true
+  - name: SECRET_KEY
+    required: true
+    from: '[a-zA-Z0-9]{64}'
+    generate: expression
+  - name: SECRET_NAME
+    value: scavenger
+    required: true
+  - name: REPLICAS
+    value: "1"
+    required: true
+  - name: SOURCE_REPOSITORY_URL
+    value: https://gitlab.com/cfchase/jobs-api.git
+    required: true
+  - name: SOURCE_REPOSITORY_REF
+    value: master
+    required: true
+  - name: SOURCE_REPOSITORY_DIR
+    value: /api
+    required: true
+  - name: CONTAINER_REQUEST_CPU
+    value: 500m
+  - name: CONTAINER_REQUEST_MEMORY
+    value: 200Mi
+  - name: CONTAINER_LIMIT_CPU
+    value: 500m
+  - name: CONTAINER_LIMIT_MEMORY
+    value: 1Gi
+  - name: KEY
+    value: ""
+  - name: CERTIFICATE
+    value: ""
+  - name: CA_CERTIFICATE
+    value: ""
+
+objects:
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: ${SERVICE_ACCOUNT_NAME}
+      annotations:
+
+  - apiVersion: v1
+    kind: RoleBinding
+    metadata:
+      name: ${SERVICE_ACCOUNT_NAME}-edit
+    roleRef:
+      name: edit
+    subjects:
+      - kind: ServiceAccount
+        name: ${SERVICE_ACCOUNT_NAME}
+
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: ${APPLICATION_NAME}
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      dockerImageRepository: ${APPLICATION_NAME}
+      tags:
+        - name: latest
+
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: ${APPLICATION_NAME}
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${APPLICATION_NAME}:latest
+      resources:
+        requests: {}
+      source:
+        git:
+          uri: ${SOURCE_REPOSITORY_URL}
+          ref: ${SOURCE_REPOSITORY_REF}
+        contextDir: ${SOURCE_REPOSITORY_DIR}
+        type: Git
+      strategy:
+        sourceStrategy:
+          env:
+            - name: GIT_SSL_NO_VERIFY
+              value: 'true'
+          forcePull: true
+          from:
+            kind: DockerImage
+            name: 'docker.io/centos/python-36-centos7:latest'
+        type: Source
+      triggers:
+        - imageChange:
+          type: ImageChange
+        - type: ConfigChange
+
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: ${APPLICATION_NAME}
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      replicas: ${{REPLICAS}}
+      selector:
+        deploymentconfig: ${APPLICATION_NAME}
+      strategy:
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            app: ${APPLICATION_NAME}
+            deploymentconfig: ${APPLICATION_NAME}
+        spec:
+          containers:
+            - env:
+                - name: SECRET_KEY
+                  value: ${SECRET_KEY}
+              envFrom:
+                - configMapRef:
+                    name: ${CONFIG_MAP_NAME}
+                - secretRef:
+                    name: ${SECRET_NAME}
+              image: ${APPLICATION_NAME}
+              imagePullPolicy: Always
+              name: ${APPLICATION_NAME}
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              resources:
+                requests:
+                  cpu: ${CONTAINER_REQUEST_CPU}
+                  memory: ${CONTAINER_REQUEST_MEMORY}
+                limits:
+                  cpu: ${CONTAINER_LIMIT_CPU}
+                  memory: ${CONTAINER_LIMIT_MEMORY}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          serviceAccount: ${SERVICE_ACCOUNT_NAME}
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+      test: false
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${APPLICATION_NAME}
+            from:
+              kind: ImageStreamTag
+              name: ${APPLICATION_NAME}:latest
+          type: ImageChange
+        - type: ConfigChange
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: ${APPLICATION_NAME}
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      ports:
+        - name: 8080-tcp
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        deploymentconfig: ${APPLICATION_NAME}
+
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+    spec:
+      port:
+        targetPort: 8080-tcp
+      to:
+        kind: Service
+        name: ${APPLICATION_NAME}
+      tls:
+        termination: edge
+        key: |-
+          ${KEY}
+        certificate: |-
+          ${CERTIFICATE}
+        caCertificate: |-
+          ${CA_CERTIFICATE}
+        insecureEdgeTerminationPolicy: Redirect
+      wildcardPolicy: None

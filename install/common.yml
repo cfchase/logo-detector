@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Template
+
+labels:
+  application: scavenger
+
+metadata:
+  name: scavenger
+
+parameters:
+  - name: SECRET_NAME
+    value: scavenger
+    required: true
+  - name: S3_ACCESS_KEY
+    value: ""
+  - name: S3_SECRET_KEY
+    value: ""
+  - name: S3_ENDPOINT
+    value: ""
+  - name: S3_BUCKET
+    value: ""
+  - name: S3_PREFIX
+    value: ""
+
+objects:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ${SECRET_NAME}
+    data:
+    stringData:
+      S3_ACCESS_KEY: "${S3_ACCESS_KEY}"
+      S3_SECRET_KEY: "${S3_SECRET_KEY}"
+      S3_ENDPOINT: "${S3_ENDPOINT}"
+      S3_BUCKET: "${S3_BUCKET}"
+      S3_PREFIX: "${S3_PREFIX}"

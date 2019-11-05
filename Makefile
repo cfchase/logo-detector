@@ -11,53 +11,88 @@ oc-login:
 	${OC} login ${OC_URL} -u ${OC_USER} -p ${OC_PASSWORD} --insecure-skip-tls-verify=true
 	${OC} project ${PROJECT} 2> /dev/null || oc new-project ${PROJECT}
 
-.PHONY: build-backend
-build-backend:
-	./install/build-backend.sh
+.PHONY: build-inference
+build-inference:
+	./install/build-inference.sh
 
-.PHONY: build-frontend
-build-frontend:
-	./install/build-frontend.sh
+.PHONY: build-server
+build-server:
+	./install/build-server.sh
+
+.PHONY: build-ui
+build-ui:
+	./install/build-ui.sh
 
 .PHONY: build
-build:
-	./install/build-backend.sh && ./install/build-frontend.sh
+build: build-inference build-server build-ui
 
-.PHONY: push-backend
-push-backend:
-	./install/push-backend.sh
+.PHONY: push-inference
+push-inference:
+	./install/push-inference.sh
 
-.PHONY: push-frontend
-push-frontend:
-	./install/push-frontend.sh
+.PHONY: push-server
+push-server:
+	./install/push-server.sh
+
+.PHONY: push-ui
+push-ui:
+	./install/push-ui.sh
 
 .PHONY: push
-push:
-	./install/push-backend.sh && ./install/push-frontend.sh
+push: push-inference push-server push-ui
 
-.PHONY: deploy-backend
-deploy-backend: oc-login
-	./install/deploy-backend.sh
+.PHONY: deploy-common
+deploy-common: oc-login
+	./install/deploy-common.sh
 
-.PHONY: deploy-frontend
-deploy-frontend: oc-login
-	./install/deploy-frontend.sh
+.PHONY: deploy-inference
+deploy-inference: oc-login
+	./install/deploy-inference.sh
+
+.PHONY: deploy-server
+deploy-server: oc-login
+	./install/deploy-server.sh
+
+.PHONY: deploy-ui
+deploy-ui: oc-login
+	./install/deploy-ui.sh
 
 .PHONY: deploy
-deploy: oc-login
-	./install/deploy-backend.sh && ./install/deploy-frontend.sh
+deploy: oc-login deploy-common deploy-inference deploy-server deploy-ui
 
-.PHONY: undeploy-backend
-undeploy-backend: oc-login
-	./install/undeploy-backend.sh
+.PHONY: rollout-inference
+rollout-inference: oc-login
+	./install/rollout-inference.sh
 
-.PHONY: undeploy-frontend
-undeploy-frontend: oc-login
-	./install/undeploy-frontend.sh
+.PHONY: rollout-server
+rollout-server: oc-login
+	./install/rollout-server.sh
+
+.PHONY: rollout-ui
+rollout-ui: oc-login
+	./install/rollout-ui.sh
+
+.PHONY: rollout
+rollout: oc-login rollout-inference rollout-server rollout-ui
+
+.PHONY: undeploy-common
+undeploy-common: oc-login
+	./install/undeploy-common.sh
+
+.PHONY: undeploy-inference
+undeploy-inference: oc-login
+	./install/undeploy-inference.sh
+
+.PHONY: undeploy-server
+undeploy-server: oc-login
+	./install/undeploy-server.sh
+
+.PHONY: undeploy-ui
+undeploy-ui: oc-login
+	./install/undeploy-ui.sh
 
 .PHONY: undeploy
-undeploy: oc-login
-	./install/undeploy-backend.sh && ./install/undeploy-frontend.sh
+undeploy: oc-login undeploy-ui undeploy-server undeploy-inference undeploy-common
 
 .PHONY: delete
 delete:

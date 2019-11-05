@@ -3,7 +3,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-UI_IMAGE_REPOSITORY=${UI_IMAGE_REPOSITORY:-quay.io/cfchase/scavenger-ui:latest}
+IMAGE_REPOSITORY=${UI_IMAGE_REPOSITORY:-quay.io/cfchase/scavenger-ui:latest}
 SOURCE_REPOSITORY_URL=${SOURCE_REPOSITORY_URL:-https://github.com/cfchase/scavenger.git}
 SOURCE_REPOSITORY_REF=${SOURCE_REPOSITORY_REF:-master}
 
@@ -14,4 +14,4 @@ rm -rf build
 yarn install
 yarn build
 
-s2i build ./build centos/nginx-114-centos7 ${UI_IMAGE_REPOSITORY}
+s2i build ./build centos/nginx-114-centos7 ${IMAGE_REPOSITORY}
