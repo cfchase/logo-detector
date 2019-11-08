@@ -1,6 +1,8 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { getStatus } from "../actions";
+import Routes from "../../Routes";
 
 import "./App.scss";
 
@@ -11,7 +13,12 @@ function App({status, getStatus}) {
 
   return (
     <div className="app">
-      <code>{JSON.stringify(status, null, 2)}</code>
+      <nav className="navbar">
+        <a href="/">Home</a>
+        <a href="/capture">Capture</a>
+        <a href="/library">Library</a>
+      </nav>
+      <Routes/>
     </div>
   );
 }
@@ -28,4 +35,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(App));
