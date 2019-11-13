@@ -1,8 +1,8 @@
 "use strict";
 
-const env = require("env-var");
 const axios = require("../../utils/axios");
-const inferenceUrl = env.get("INFERENCE_URL", "http://scavenger-inference:8080").asString();
+const {INFERENCE_URL} = require("../../utils/constants");
+const storage = require("../../utils/storage");
 
 const opts = {
   schema: {
@@ -14,19 +14,16 @@ const opts = {
 
 module.exports = async function (fastify, opts) {
   fastify.get("/status", async function (request, reply) {
-    const inferenceStatusUrl = new URL("/status", inferenceUrl).href;
-    request.log.info("inferenceStatusUrl", inferenceStatusUrl);
+    const requestUrl = new URL("/status", INFERENCE_URL).href;
+    request.log.info("inferenceStatusUrl", requestUrl);
     try {
       const inferenceResponse = await axios({
-        // headers: {
-        //   "content-type": "application/json",
-        // },
         method: "GET",
-        url: inferenceStatusUrl
+        url: requestUrl
       });
 
       let inferenceStatus = inferenceResponse.data;
-      return {inferenceStatus};
+      return {inferenceStatus, storage};
     } catch (error) {
       request.log.error("error occurred in http call to inference API:");
       request.log.error(error);

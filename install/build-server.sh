@@ -1,5 +1,4 @@
 #!/bin/bash
-#set -x
 
 IMAGE_REPOSITORY=${SERVER_IMAGE_REPOSITORY:-quay.io/cfchase/scavenger-server:latest}
 SOURCE_REPOSITORY_URL=${SOURCE_REPOSITORY_URL:-https://github.com/cfchase/scavenger.git}

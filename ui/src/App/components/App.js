@@ -29,7 +29,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    getStatus: (notification) => {
+    getStatus: () => {
       dispatch(getStatus());
     }
   };

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#set -x
 
 IMAGE_REPOSITORY=${INFERENCE_IMAGE_REPOSITORY:-quay.io/cfchase/scavenger-inference:latest}
 

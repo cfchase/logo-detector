@@ -5,13 +5,11 @@ const AutoLoad = require('fastify-autoload');
 const env = require("env-var");
 
 const opts = {};
-const port = env.get("PORT", "8080").asIntPositive();
-const ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || "0.0.0.0";
-const logLevel = env.get("LOG_LEVEL", "info").asString();
+const {PORT, IP, LOG_LEVEL} = require("./utils/constants");
 
 const fastify = require('fastify')({
   logger: {
-    level:  logLevel
+    level:  LOG_LEVEL
   }
 });
 
@@ -39,7 +37,7 @@ fastify.register(AutoLoad, {
 });
 
 
-fastify.listen(port, ip,function (err, address) {
+fastify.listen(PORT, IP, function (err, address) {
   if (err) {
     fastify.log.error(err);
     process.exit(1)

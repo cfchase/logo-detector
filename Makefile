@@ -6,10 +6,9 @@ endif
 
 .DEFAULT_GOAL := build
 
-.PHONY: oc-login
-oc-login:
-	${OC} login ${OC_URL} -u ${OC_USER} -p ${OC_PASSWORD} --insecure-skip-tls-verify=true
-	${OC} project ${PROJECT} 2> /dev/null || oc new-project ${PROJECT}
+.PHONY: login
+login:
+	./install/login.sh
 
 .PHONY: build-inference
 build-inference:
@@ -42,57 +41,57 @@ push-ui:
 push: push-inference push-server push-ui
 
 .PHONY: deploy-common
-deploy-common: oc-login
+deploy-common: login
 	./install/deploy-common.sh
 
 .PHONY: deploy-inference
-deploy-inference: oc-login
+deploy-inference: login
 	./install/deploy-inference.sh
 
 .PHONY: deploy-server
-deploy-server: oc-login
+deploy-server: login
 	./install/deploy-server.sh
 
 .PHONY: deploy-ui
-deploy-ui: oc-login
+deploy-ui: login
 	./install/deploy-ui.sh
 
 .PHONY: deploy
-deploy: oc-login deploy-common deploy-inference deploy-server deploy-ui
+deploy: login deploy-common deploy-inference deploy-server deploy-ui
 
 .PHONY: rollout-inference
-rollout-inference: oc-login
+rollout-inference: login
 	./install/rollout-inference.sh
 
 .PHONY: rollout-server
-rollout-server: oc-login
+rollout-server: login
 	./install/rollout-server.sh
 
 .PHONY: rollout-ui
-rollout-ui: oc-login
+rollout-ui: login
 	./install/rollout-ui.sh
 
 .PHONY: rollout
-rollout: oc-login rollout-inference rollout-server rollout-ui
+rollout: login rollout-inference rollout-server rollout-ui
 
 .PHONY: undeploy-common
-undeploy-common: oc-login
+undeploy-common: login
 	./install/undeploy-common.sh
 
 .PHONY: undeploy-inference
-undeploy-inference: oc-login
+undeploy-inference: login
 	./install/undeploy-inference.sh
 
 .PHONY: undeploy-server
-undeploy-server: oc-login
+undeploy-server: login
 	./install/undeploy-server.sh
 
 .PHONY: undeploy-ui
-undeploy-ui: oc-login
+undeploy-ui: login
 	./install/undeploy-ui.sh
 
 .PHONY: undeploy
-undeploy: oc-login undeploy-ui undeploy-server undeploy-inference undeploy-common
+undeploy: login undeploy-ui undeploy-server undeploy-inference undeploy-common
 
 .PHONY: delete
 delete:

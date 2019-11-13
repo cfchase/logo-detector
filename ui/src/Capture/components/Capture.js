@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
+import { createPhoto } from "../actions";
 
 import "./Capture.scss";
 
 import NoImage from "./no-image.svg"
 
-function Capture() {
+function Capture({createPhoto}) {
   const [image, setImage] = useState(null);
   const [cameraEnabled, setCameraEnabled] = useState(null);
   const [video, setVideo] = useState(null);
@@ -64,10 +65,7 @@ function Capture() {
 
   function onUploadClicked() {
     let imageData = canvas.toDataURL('image/jpeg');
-    console.log("imageData=", imageData);
-    let uploadData = imageData.replace(/^data:image\/(png|jpg|jpeg);base64,/, '');
-    console.log("imageData=", imageData);
-    console.log("uploadData=", uploadData);
+    createPhoto(imageData);
   }
 
   function renderCameraToggle() {
@@ -116,8 +114,8 @@ function Capture() {
           />
         </div>
         <div>
-          <button onClick={onCameraToggled}> Re-take</button>
-          <button onClick={onUploadClicked}> Upload</button>
+          <button onClick={onCameraToggled}>Re-take</button>
+          <button onClick={onUploadClicked}>Upload</button>
         </div>
       </>
     );
@@ -147,7 +145,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-
+    createPhoto: (photo) => {
+      dispatch(createPhoto(photo));
+    }
   };
 }
 

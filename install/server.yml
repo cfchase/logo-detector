@@ -29,7 +29,9 @@ parameters:
   - name: INFERENCE_URL
     value: http://scavenger-inference:8080
     required: true
-
+  - name: KEY
+  - name: CERTIFICATE
+  - name: CA_CERTIFICATE
 
 objects:
   - apiVersion: v1

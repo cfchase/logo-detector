@@ -18,6 +18,9 @@ parameters:
     displayName: Image Repository
     value: quay.io/cfchase/scavenger-ui:latest
     required: true
+  - name: KEY
+  - name: CERTIFICATE
+  - name: CA_CERTIFICATE
 
 objects:
   - apiVersion: v1

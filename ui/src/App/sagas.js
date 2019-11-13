@@ -10,7 +10,7 @@ import {
 
 export const statusUrl = "/api/status";
 
-function* get(action) {
+function* executeGetStatus(action) {
   yield put(getStatusPending());
   try {
     const response = yield call(axios.get, statusUrl);
@@ -22,7 +22,7 @@ function* get(action) {
 }
 
 export function* watchGetStatus() {
-  yield takeLatest(GET_STATUS, get);
+  yield takeLatest(GET_STATUS, executeGetStatus);
 }
 
 export default [
