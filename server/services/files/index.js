@@ -11,20 +11,13 @@ const storage = require("../../utils/storage");
 const photoPrefix = "photos";
 
 module.exports = async function (fastify, opts) {
-  fastify.post("/photo", async function (request, reply) {
+  fastify.post("/files", async function (request, reply) {
     try {
-      const strData = _.get(request, "body.photo");
-      if (!strData) {
-        reply.code(422);
-        return {
-          status: "error",
-          message: "Missing Fields: photo",
-        };
-      }
+      const strData = _.get(request, "body.file");
 
       const base64data = strData.replace(/^data:image\/(png|jpg|jpeg);base64,/, '');
       const buff = Buffer.from(base64data, 'base64');
-      const file = await writeJpg(buff);
+      const file = await writeFile(buff, request);
       const inferenceResponse = await getInference(file);
       const inference = inferenceResponse.data;
       reply.code(201);
@@ -32,19 +25,23 @@ module.exports = async function (fastify, opts) {
     } catch (error) {
       request.log.error("error occurred writing photo");
       request.log.error(error);
+      reply.code(500);
+      return {error};
     }
   });
 };
 
-async function writeJpg(data, request) {
-  const photoId = generateFilename();
-  try {
-    const response = await storage.writeFile(data, photoId);
-    return photoId;
-  } catch (error) {
-    request.log.error(`Failure to write ${photoId} to storage`);
-    throw error;
-  }
+async function writeFile(data, request) {
+  return new Promise((resolve, reject) => {
+    const fileName = generateFilename();
+    fs.writeFile(fileName, data, error => {
+      if (error) {
+        reject(error)
+      }
+
+      resolve(fileName);
+    });
+  });
 }
 
 function getInference(file) {
@@ -61,5 +58,5 @@ function getInference(file) {
 function generateFilename() {
   const date = moment().format('YYYYMMDD-HH:mm:ss:SSS');
   const random = Math.random().toString(36).slice(-5);
-  return `${photoPrefix}/${date}-${random}.jpg`;
+  return `/tmp/${date}-${random}.jpg`;
 }

@@ -1,0 +1,45 @@
+.capture {
+  width: 100%;
+  max-width: 375px;
+
+  .img-container {
+    text-align: center;
+  }
+
+  .camera-preview,
+  .upload-preview,
+  .search-result {
+    //width: 100%;
+    max-width: 350px;
+    max-height: 350px;
+  }
+
+  .result-score {
+    color: #72767B;
+  }
+
+  .button-bar {
+    width: 100%;
+    max-width: 375px;
+    padding: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .result .button-bar,
+  .camera .button-bar {
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .camera .button-bar {
+    justify-content: flex-end;
+  }
+
+  .result .button-bar {
+    justify-content: space-between;
+  }
+}

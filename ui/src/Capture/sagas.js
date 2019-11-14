@@ -8,10 +8,9 @@ import {
   createPhotoRejected
 } from "./actions";
 
-export const photoApiUrl = "/api/photo";
+export const photoApiUrl = "/api/photos";
 
 function* executeCreatePhoto(action) {
-  console.log(executeCreatePhoto)
   yield put(createPhotoPending());
   try {
     const response = yield call(axios.post, photoApiUrl, {photo: action.payload.photo});

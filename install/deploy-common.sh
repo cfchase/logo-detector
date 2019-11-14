@@ -12,5 +12,6 @@ oc process -f "${DIR}/common.yml" \
   -p S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY} \
   -p S3_ENDPOINT=${S3_ENDPOINT} \
   -p S3_BUCKET=${S3_BUCKET} \
+  -p S3_REGION=${S3_REGION} \
   -p S3_PREFIX=${S3_PREFIX} \
   | oc create -f -

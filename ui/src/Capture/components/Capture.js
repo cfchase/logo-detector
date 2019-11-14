@@ -1,17 +1,41 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
-import { createPhoto } from "../actions";
+import get from "lodash/get";
+import { Button } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { resetCapture, createPhoto } from "../actions";
 
 import "./Capture.scss";
 
 import NoImage from "./no-image.svg"
+import ReactJson from "react-json-view";
 
-function Capture({createPhoto}) {
+const useStyles = makeStyles(theme => ({
+  button: {
+    margin: theme.spacing(1),
+  },
+  input: {
+    display: 'none',
+  },
+}));
+
+function Capture(
+  {
+    reset,
+    createPhoto,
+    inferencePending,
+    inferenceResponse,
+    inference,
+    inferenceError
+  }) {
   const [image, setImage] = useState(null);
   const [cameraEnabled, setCameraEnabled] = useState(null);
   const [video, setVideo] = useState(null);
   const [canvas, setCanvas] = useState(null);
 
+  const classes = useStyles();
 
   useEffect(() => {
     enableCamera();
@@ -20,7 +44,7 @@ function Capture({createPhoto}) {
   const videoRef = useCallback(node => {
     setVideo(node);
     if (node) {
-      navigator.mediaDevices.getUserMedia({video: true})
+      navigator.mediaDevices.getUserMedia({video: { facingMode: "environment" }})
         .then(stream => node.srcObject = stream);
     }
   }, []);
@@ -41,6 +65,7 @@ function Capture({createPhoto}) {
   }
 
   function onCameraToggled() {
+    reset();
     enableCamera();
   }
 
@@ -56,11 +81,14 @@ function Capture({createPhoto}) {
     );
 
     video.srcObject.getVideoTracks().forEach(track => {
-      track.stop()
+      track.stop();
     });
 
     setImage(canvas.toDataURL());
     setCameraEnabled(false);
+
+    let imageData = canvas.toDataURL('image/jpeg');
+    createPhoto(imageData);
   }
 
   function onUploadClicked() {
@@ -87,37 +115,71 @@ function Capture({createPhoto}) {
     }
 
     return (
-      <>
-        <div>
+      <div className="camera">
+        <div className="img-container">
           <video
+            className="camera-preview"
             ref={videoRef}
-            controls={false} autoPlay
+            controls={false}
+            autoPlay
+            playsInline
           />
         </div>
-        <div>
-          <button onClick={onCameraClicked}> Take Picture</button>
+        <div className="button-bar">
+          <Button
+            variant="contained"
+            size="large"
+            color="primary"
+            className={classes.margin}
+            onClick={onCameraClicked}
+          > Take Picture
+          </Button>
         </div>
-      </>
+      </div>
     );
   }
 
-  function renderImage() {
+
+  function renderUpload() {
     if (!image || cameraEnabled) {
       return null;
     }
+
+    let inferenceResult = null;
+    if (inferencePending) {
+      inferenceResult = (
+        <div className="inference-result">
+          <CircularProgress/>
+        </div>);
+    } else if (inference) {
+      inferenceResult = (
+        <div className="inference-result">
+          {inference.map((logoClass, index) => <h2 key={index}>{logoClass}</h2>)}
+        </div>);
+    }
+
     return (
-      <>
-        <div className="captured-image">
+      <div className="upload">
+        <div className="img-container">
           <img
+            className="upload-preview"
             src={image || NoImage}
-            alt="image"
+            alt="camera-preview"
           />
         </div>
-        <div>
-          <button onClick={onCameraToggled}>Re-take</button>
-          <button onClick={onUploadClicked}>Upload</button>
+        <div className="button-bar">
+          {inferenceResult}
+          <div>
+            <Button
+              variant="contained"
+              size="large"
+              className={classes.margin}
+              onClick={onCameraToggled}
+            > Re-take
+            </Button>
+          </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -130,11 +192,36 @@ function Capture({createPhoto}) {
     )
   }
 
+  function renderInference() {
+    console.log(inferenceResponse);
+    const data = get("data", inferenceResponse);
+    console.log(data);
+
+    if (!inferenceResponse || !inferenceResponse.data) {
+      return null;
+    }
+
+    return (
+      <ReactJson
+        name={false}
+        enableClipboard={false}
+        onEdit={false}
+        onAdd={false}
+        onDelete={false}
+        displayDataTypes={false}
+        collapseStringsAfterLength={120}
+        shouldCollapse={field => field.type === "array" && field.src.length > 4}
+        src={inferenceResponse.data}
+      />
+    );
+  }
+
   return (
     <div className="capture">
       {renderCamera()}
-      {renderImage()}
+      {renderUpload()}
       {renderSnapshot()}
+      {renderInference()}
     </div>
   );
 }
@@ -145,6 +232,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
+    reset: () => {
+      dispatch(resetCapture());
+    },
     createPhoto: (photo) => {
       dispatch(createPhoto(photo));
     }

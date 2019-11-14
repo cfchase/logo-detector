@@ -1,13 +1,44 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React from "react";
 import { connect } from "react-redux";
+import { makeStyles } from '@material-ui/core/styles';
+import { Button, Link } from '@material-ui/core';
 
 import "./Home.scss";
 
+const useStyles = makeStyles(theme => ({
+  link: {
+    margin: theme.spacing(1),
+  },
+  button: {
+    margin: theme.spacing(1),
+  },
+}));
 
 function Home() {
+  const classes = useStyles();
+
   return (
     <div className="home">
-      <h1>Home</h1>
+      {/*<div>*/}
+      {/*  <Button*/}
+      {/*    variant="contained"*/}
+      {/*    size="large"*/}
+      {/*    color="default"*/}
+      {/*    className={classes.margin}*/}
+      {/*    href="/capture"*/}
+      {/*  > Classify Logo*/}
+      {/*  </Button>*/}
+      {/*</div>*/}
+      <div>
+        <Button
+          variant="contained"
+          size="large"
+          color="default"
+          className={classes.margin}
+          href="/search"
+        > Search for Logos
+        </Button>
+      </div>
     </div>
   );
 }
