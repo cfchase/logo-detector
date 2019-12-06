@@ -29,7 +29,7 @@ parameters:
   - name: CONTAINER_REQUEST_CPU
     value: 2000m
   - name: CONTAINER_REQUEST_MEMORY
-    value: 1Gi
+    value: 2Gi
   - name: CONTAINER_LIMIT_CPU
     value: 2000m
   - name: CONTAINER_LIMIT_MEMORY
