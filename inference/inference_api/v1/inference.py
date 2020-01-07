@@ -23,6 +23,8 @@ def clean_detections(inference):
     num_detections = inference['num_detections']
 
     for i in range(0, num_detections):
+        str_index = str(int(inference['detection_classes'][i]))
+        label = model_config['labels'].get(str_index) or str_index
         d = {
             'box': {
                 'yMin': inference['detection_boxes'][i][0],
@@ -30,9 +32,9 @@ def clean_detections(inference):
                 'yMax': inference['detection_boxes'][i][2],
                 'xMax': inference['detection_boxes'][i][3]
             },
-            'class': inference['detection_classes'][0],
-            'label': model_config['labels'][str(int(inference['detection_classes'][0]))],
-            'score': inference['detection_scores'],
+            'class': inference['detection_classes'][i],
+            'label': label,
+            'score': inference['detection_scores'][i],
         }
         cleaned.append(d)
     return cleaned

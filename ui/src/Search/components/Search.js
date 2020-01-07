@@ -170,7 +170,7 @@ function Search(
       } else {
       inferenceResult = (
         <div className="inference-result">
-          {inference.detections.map((d, index) => <h2 key={index}>{d.label} <span className="result-score">{Math.floor(d.score[0] * 100)}%</span></h2>)}
+          {inference.detections.map((d, index) => <h2 key={index}>{d.label} <span className="result-score">{Math.floor(d.score * 100)}%</span></h2>)}
         </div>);
       }
     }
