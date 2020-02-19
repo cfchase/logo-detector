@@ -19,16 +19,16 @@ function Home() {
 
   return (
     <div className="home">
-      {/*<div>*/}
-      {/*  <Button*/}
-      {/*    variant="contained"*/}
-      {/*    size="large"*/}
-      {/*    color="default"*/}
-      {/*    className={classes.margin}*/}
-      {/*    href="/capture"*/}
-      {/*  > Classify Logo*/}
-      {/*  </Button>*/}
-      {/*</div>*/}
+      <div>
+        <Button
+          variant="contained"
+          size="large"
+          color="default"
+          className={classes.margin}
+          href="/video"
+        > Video Feed
+        </Button>
+      </div>
       <div>
         <Button
           variant="contained"
@@ -36,7 +36,7 @@ function Home() {
           color="default"
           className={classes.margin}
           href="/search"
-        > Search for Logos
+        > Snapshot
         </Button>
       </div>
     </div>

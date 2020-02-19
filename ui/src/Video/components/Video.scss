@@ -1,0 +1,30 @@
+.video {
+  width: 100%;
+
+  .button-bar {
+    width: 640px;
+    display: flex;
+    button {
+      margin: .5rem;
+    }
+
+    .slider-container {
+      width: 100%;
+      margin-left: 1rem;
+      color: white;
+    }
+  }
+
+  .feed {
+    width: 640px;
+    height: 480px;
+  }
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  background-color: black;
+}

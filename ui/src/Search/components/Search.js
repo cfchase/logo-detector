@@ -54,12 +54,6 @@ function Search(
     setCanvas(node);
   }, []);
 
-  function onInputChanged(e) {
-    let targetFile = e.target.files[0];
-    console.log(targetFile);
-    setImage(URL.createObjectURL(targetFile))
-  }
-
   function enableCamera() {
     setCameraEnabled(!cameraEnabled);
     setImage(null);
@@ -201,10 +195,6 @@ function Search(
   }
 
   function renderDebugInfo() {
-    console.log(inferenceResponse);
-    const data = get("data", inferenceResponse);
-    console.log(data);
-
     if (!inferenceResponse || !inferenceResponse.data) {
       return null;
     }
@@ -220,12 +210,13 @@ function Search(
           collapseStringsAfterLength={120}
           shouldCollapse={field => field.type === "array" && field.src.length > 4}
           src={inferenceResponse.data}
+          theme="bright"
         />
     );
   }
 
   return (
-    <div className="capture">
+    <div className="search">
       {renderCamera()}
       {renderSnapshot()}
       {renderDebugInfo()}

@@ -1,5 +1,6 @@
 import os
 import uuid
+import json
 import tensorflow as tf
 from flask import Flask
 from storage import S3Store
@@ -14,11 +15,11 @@ storage = S3Store(
     region=Config.S3_REGION
 )
 
-local_dir = '/tmp/inference-models-' + uuid.uuid4().hex[:6]
-storage.download_directory(Config.MODEL_LOCATION, local_dir)
-saved_model = tf.saved_model.load(os.path.join(local_dir))
+local_dir = 'inference_api/models/logos'
+saved_model = tf.saved_model.load(local_dir)
 model = saved_model.signatures['serving_default']
-model_config = storage.get_json(Config.MODEL_CONFIG_LOCATION)
+with open('inference_api/models/model_config.json') as json_file:
+    model_config = json.load(json_file)
 
 
 def create_app(app_name):

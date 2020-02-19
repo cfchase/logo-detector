@@ -5,17 +5,17 @@
 
   .navbar {
     width: 100%;
-    max-width: 375px;
+    max-width: 640px;
     padding: 1rem;
     display: flex;
     justify-content: space-between;
     a {
-      color: #4d5258;
+      color: #f1f1f1;
     }
   }
 
   .route-loading {
     text-align: center;
-    max-width: 375px;
+    max-width: 640px;
   }
 }
