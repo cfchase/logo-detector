@@ -27,13 +27,13 @@ parameters:
     value: quay.io/cfchase/scavenger-server:latest
     required: true
   - name: CONTAINER_REQUEST_CPU
-    value: 500m
+    value: '1'
   - name: CONTAINER_REQUEST_MEMORY
-    value: 200Mi
+    value: 1Gi
   - name: CONTAINER_LIMIT_CPU
-    value: 500m
+    value: '1'
   - name: CONTAINER_LIMIT_MEMORY
-    value: 500Mi
+    value: 2Gi
   - name: INFERENCE_URL
     value: http://scavenger-inference:8080
     required: true

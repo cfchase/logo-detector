@@ -21,11 +21,11 @@ parameters:
   - name: CONTAINER_REQUEST_CPU
     value: 500m
   - name: CONTAINER_REQUEST_MEMORY
-    value: 200Mi
+    value: 500Mi
   - name: CONTAINER_LIMIT_CPU
     value: 500m
   - name: CONTAINER_LIMIT_MEMORY
-    value: 500Mi
+    value: 1Gi
   - name: KEY
   - name: CERTIFICATE
   - name: CA_CERTIFICATE
