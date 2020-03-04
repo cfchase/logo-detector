@@ -2,10 +2,6 @@ import React, { useEffect } from 'react';
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
-import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
-import CameraAltOutlinedIcon from '@material-ui/icons/CameraAltOutlined';
-import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
-
 import { getStatus } from "../actions";
 import Routes from "../../Routes";
 
@@ -18,11 +14,6 @@ function App({status, getStatus}) {
 
   return (
     <div className="app">
-      <nav className="navbar">
-        <a href="/"><HomeOutlinedIcon style={{ fontSize: 48 }}/></a>
-        <a href="/video"><VideocamOutlinedIcon style={{ fontSize: 48 }}/></a>
-        <a href="/search"><CameraAltOutlinedIcon style={{ fontSize: 48 }}/></a>
-      </nav>
       <Routes/>
     </div>
   );

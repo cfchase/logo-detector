@@ -3,17 +3,7 @@ import uuid
 import json
 import tensorflow as tf
 from flask import Flask
-from storage import S3Store
 from inference_api.config import Config
-
-storage = S3Store(
-    prefix=Config.S3_PREFIX,
-    host=Config.S3_ENDPOINT,
-    key_id=Config.S3_ACCESS_KEY_ID,
-    secret_key=Config.S3_SECRET_ACCESS_KEY,
-    bucket=Config.S3_BUCKET,
-    region=Config.S3_REGION
-)
 
 local_dir = 'inference_api/models/logos'
 saved_model = tf.saved_model.load(local_dir)

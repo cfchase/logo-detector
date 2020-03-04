@@ -2,20 +2,17 @@ apiVersion: v1
 kind: Template
 
 labels:
-  application: scavenger-server
+  application: logo-detector-server
 
 metadata:
-  name: scavenger-server
+  name: logo-detector-server
 
 parameters:
   - name: APPLICATION_NAME
-    value: scavenger-server
-    required: true
-  - name: SECRET_NAME
-    value: scavenger
+    value: logo-detector-server
     required: true
   - name: REPLICAS
-    value: "1"
+    value: "2"
     required: true
   - name: PORT
     value: "8080"
@@ -24,7 +21,7 @@ parameters:
     value: "0.0.0.0"
     required: true
   - name: IMAGE_REPOSITORY
-    value: quay.io/cfchase/scavenger-server:latest
+    value: quay.io/cfchase/logo-detector-server:latest
     required: true
   - name: CONTAINER_REQUEST_CPU
     value: '1'
@@ -35,7 +32,7 @@ parameters:
   - name: CONTAINER_LIMIT_MEMORY
     value: 2Gi
   - name: INFERENCE_URL
-    value: http://scavenger-inference:8080
+    value: http://logo-detector-inference:8080
     required: true
   - name: KEY
   - name: CERTIFICATE
@@ -68,9 +65,6 @@ objects:
                   value: "${PORT}"
                 - name: INFERENCE_URL
                   value: "${INFERENCE_URL}"
-              envFrom:
-                - secretRef:
-                    name: ${SECRET_NAME}
               image: ${IMAGE_REPOSITORY}
               imagePullPolicy: Always
               name: ${APPLICATION_NAME}

@@ -27,7 +27,7 @@ module.exports = async function (fastify, opts) {
 
     const inference = inferenceResponse.data;
     reply.code(201);
-    return {photo, inference};
+    return {inference};
   });
 };
 

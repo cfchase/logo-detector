@@ -40,10 +40,6 @@ push-ui:
 .PHONY: push
 push: push-inference push-server push-ui
 
-.PHONY: deploy-common
-deploy-common: login
-	./install/deploy-common.sh
-
 .PHONY: deploy-inference
 deploy-inference: login
 	./install/deploy-inference.sh
@@ -57,7 +53,7 @@ deploy-ui: login
 	./install/deploy-ui.sh
 
 .PHONY: deploy
-deploy: login deploy-common deploy-inference deploy-server deploy-ui
+deploy: login deploy-inference deploy-server deploy-ui
 
 .PHONY: rollout-inference
 rollout-inference: login
@@ -74,10 +70,6 @@ rollout-ui: login
 .PHONY: rollout
 rollout: login rollout-inference rollout-server rollout-ui
 
-.PHONY: undeploy-common
-undeploy-common: login
-	./install/undeploy-common.sh
-
 .PHONY: undeploy-inference
 undeploy-inference: login
 	./install/undeploy-inference.sh
@@ -91,7 +83,7 @@ undeploy-ui: login
 	./install/undeploy-ui.sh
 
 .PHONY: undeploy
-undeploy: login undeploy-ui undeploy-server undeploy-inference undeploy-common
+undeploy: login undeploy-ui undeploy-server undeploy-inference
 
 .PHONY: delete
 delete:

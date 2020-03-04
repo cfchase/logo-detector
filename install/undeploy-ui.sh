@@ -2,8 +2,8 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-PROJECT=${PROJECT:-scavenger}
-UI_IMAGE_REPOSITORY=${UI_IMAGE_REPOSITORY:-quay.io/cfchase/scavenger-ui:latest}
+PROJECT=${PROJECT:-logo-detector}
+UI_IMAGE_REPOSITORY=${UI_IMAGE_REPOSITORY:-quay.io/cfchase/logo-detector-ui:latest}
 
 oc project ${PROJECT}
 echo "Deploying ${IMAGE_REPOSITORY}"

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-echo "Rolling out new version of scavenger-inference"
-oc rollout latest dc/scavenger-inference
+echo "Rolling out new version of logo-detector-inference"
+oc rollout latest dc/logo-detector-inference

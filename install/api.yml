@@ -2,24 +2,24 @@ apiVersion: v1
 kind: Template
 
 labels:
-  application: scavenger-api
+  application: logo-detector-api
 
 metadata:
-  name: scavenger-api
+  name: logo-detector-api
 
 parameters:
   - name: APPLICATION_NAME
-    value: scavenger-api
+    value: logo-detector-api
     required: true
   - name: SECRET_NAME
-    value: scavenger
+    value: logo-detector
     required: true
   - name: SECRET_KEY
     required: true
     from: '[a-zA-Z0-9]{64}'
     generate: expression
   - name: SECRET_NAME
-    value: scavenger
+    value: logo-detector
     required: true
   - name: REPLICAS
     value: "1"

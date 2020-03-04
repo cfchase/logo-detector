@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OC=${OC:-"/usr/bin"}
-PROJECT=${PROJECT:-scavenger}
+PROJECT=${PROJECT:-logo-detector}
 
 if [ -n "${OC_SKIP_TLS_VERIFY}" ]; then
   OC_SKIP_TLS_VERIFY_STR=--insecure-skip-tls-verify=true

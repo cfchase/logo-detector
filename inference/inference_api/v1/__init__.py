@@ -3,5 +3,5 @@ from flask import Blueprint
 
 v1 = Blueprint('v1', __name__)
 
-from inference_api.v1 import errors, status, inference, logos
+from inference_api.v1 import errors, status, logos
 

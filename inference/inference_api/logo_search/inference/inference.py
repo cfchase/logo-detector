@@ -6,7 +6,6 @@ import base64
 import io
 
 from PIL import Image
-from inference_api import storage
 
 
 def run_inference_for_base64(model, base64img):
@@ -14,23 +13,6 @@ def run_inference_for_base64(model, base64img):
     image = Image.open(io.BytesIO(img_bytes))
     inference = run_inference_for_single_image(model, image)
     return inference
-
-
-def run_inference_for_stored_file(model, image_location):
-    _, file_extension = os.path.splitext(image_location)
-    local_file = '/tmp/inference-image-' + uuid.uuid4().hex[:6] + file_extension
-    storage.download_file(image_location, local_file)
-
-    image = Image.open(local_file)
-    inference = run_inference_for_single_image(model, image)
-
-    try:
-        os.remove(local_file)
-    except OSError:
-        pass
-
-    return inference
-
 
 def run_inference_for_single_image(model, image):
     np_array = np.array(image)

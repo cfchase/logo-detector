@@ -2,20 +2,20 @@ apiVersion: v1
 kind: Template
 
 labels:
-  application: scavenger-inference
+  application: logo-detector-inference
 
 metadata:
-  name: scavenger-inference
+  name: logo-detector-inference
 
 parameters:
   - name: APPLICATION_NAME
-    value: scavenger-inference
+    value: logo-detector-inference
     required: true
-  - name: SECRET_NAME
-    value: scavenger
+  - name: ROUTE_NAME
+    value: inference
     required: true
   - name: REPLICAS
-    value: "1"
+    value: "2"
     required: true
   - name: PORT
     value: "8080"
@@ -24,16 +24,16 @@ parameters:
     value: "0.0.0.0"
     required: true
   - name: IMAGE_REPOSITORY
-    value: quay.io/cfchase/scavenger-inference:latest
+    value: quay.io/cfchase/logo-detector-inference:latest
     required: true
   - name: CONTAINER_REQUEST_CPU
-    value: 2000m
+    value: '4'
   - name: CONTAINER_REQUEST_MEMORY
     value: 4Gi
   - name: CONTAINER_LIMIT_CPU
-    value: 2000m
+    value: '4'
   - name: CONTAINER_LIMIT_MEMORY
-    value: 4Gi
+    value: 8Gi
 
 
 objects:
@@ -61,9 +61,6 @@ objects:
                   value: "${IP}"
                 - name: PORT
                   value: "${PORT}"
-              envFrom:
-                - secretRef:
-                    name: ${SECRET_NAME}
               image: ${IMAGE_REPOSITORY}
               imagePullPolicy: Always
               name: ${APPLICATION_NAME}
@@ -116,3 +113,16 @@ objects:
           targetPort: 8080
       selector:
         deploymentconfig: ${APPLICATION_NAME}
+
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${ROUTE_NAME}
+    spec:
+      port:
+        targetPort: 8080
+      to:
+        kind: Service
+        name: ${APPLICATION_NAME}

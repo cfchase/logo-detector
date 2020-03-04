@@ -2,20 +2,114 @@
   width: 100%;
 
   .camera-preview,
-  .upload-preview,
-
-  .result-score {
+  .search-result {
+    padding: 1rem;
     color: white;
+    max-width: 100%;
+    max-height: 100vh;
+  }
+
+  .img-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .button-bar {
-    width: 100%;
     padding: 1rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-  }
+    text-align: center;
 
-  .inference-result {
-    color: white;
+    button.take-picture-button {
+      height: 64px;
+      width: 64px;
+      padding: 0;
+      border-radius: 50%;
+      background-color: white;
+    }
+
+    button.re-take-picture-button {
+      height: 64px;
+      width: 64px;
+      padding: 0;
+      border-radius: 50%;
+      background-color: white;
+    }
+  }
+}
+
+@media screen and (orientation: portrait) {
+  .search {
+    .camera {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .result {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+
+      .inference-result {
+        width: fit-content;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+
+        .inference-result-line {
+          margin-top: .5rem;
+          margin-bottom: .5rem;
+        }
+
+        &.no-logos {
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (orientation: landscape) {
+  .search {
+    .camera {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: row;
+    }
+
+    .result {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: row;
+
+      .inference-result {
+        width: fit-content;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+
+        .inference-result-line {
+          margin-top: .5rem;
+          margin-bottom: .5rem;
+        }
+
+        &.no-logos {
+          text-align: center;
+        }
+      }
+    }
+
+    .action-container {
+      max-height: 90vh;
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: column;
+      overflow: hidden;
+    }
   }
 }
