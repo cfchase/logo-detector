@@ -1,7 +1,7 @@
 .search {
   width: 100%;
 
-  .camera-preview,
+  //.camera-preview,
   .search-result {
     //padding: 1rem;
     color: white;
@@ -60,6 +60,19 @@
       flex-direction: column;
     }
 
+    .img-container {
+      //min-width: 85vw;
+      min-height: 85vh;
+      //max-width: 100vw;
+      max-width: 100vh;
+
+
+      .camera-preview {
+        min-height: 85vh;
+        //min-width: 100%;
+      }
+    }
+
     .result {
       display: flex;
       justify-content: center;
@@ -98,8 +111,18 @@
     .camera {
       display: flex;
       justify-content: flex-start;
-      align-items: center;
+      align-items: flex-start;
       flex-direction: row;
+    }
+
+    .img-container {
+      min-width: 85vw;
+      max-height: 100vw;
+
+
+      .camera-preview {
+        min-width: 85vw;
+      }
     }
 
     .result {
