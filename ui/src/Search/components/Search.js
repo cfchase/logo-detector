@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useCallback } from 'react';
+import { connect } from 'react-redux';
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { resetSearch, searchPhoto } from "../actions";
-import Camera from '@material-ui/icons/Camera';
-import Cached from '@material-ui/icons/Cached';
+import { resetSearch, searchPhoto } from '../actions';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSync, faCircleNotch } from '@fortawesome/free-solid-svg-icons'
+import { faCircle } from '@fortawesome/free-regular-svg-icons'
 
-import "./Search.scss";
+import './Search.scss';
+
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -16,6 +18,45 @@ const useStyles = makeStyles(theme => ({
     display: 'none',
   },
 }));
+
+const labelSettings = {
+  'Dynatrace': {
+    bgColor: '#3DB048',
+    width: 107
+  },
+  'IBM': {
+    bgColor: '#1870C2',
+    width: 42
+  },
+  'Intel': {
+    bgColor: '#0071C6',
+    width: 49
+  },
+  'Anaconda': {
+    bgColor: '#3DB048',
+    width: 110
+  },
+  'SAS': {
+    bgColor: '#007CC2',
+    width: 60
+  },
+  'Cloudera': {
+    bgColor: '#F96703',
+    width: 110
+  },
+  'Red Hat': {
+    bgColor: '#EE0001',
+    width: 110
+  }
+};
+
+function getLabelSettings(label) {
+  const defaultSettings = {
+    color: '#EE0001'
+  };
+
+  return (labelSettings[label] || defaultSettings)
+}
 
 function Search(
   {
@@ -28,9 +69,11 @@ function Search(
   }) {
   const [image, setImage] = useState(null);
   const [cameraEnabled, setCameraEnabled] = useState(null);
+  const [cameraOverlay, setCameraOverlay] = useState(null);
   const [video, setVideo] = useState(null);
-  const [canvas, setCanvas] = useState(null);
-  const [facingMode, setFacingMode] = useState("user");
+  const [imageCanvas, setImageCanvas] = useState(null);
+  const [zonesCanvas, setZonesCanvas] = useState(null);
+  const [facingMode, setFacingMode] = useState('environment');
 
   const classes = useStyles();
 
@@ -39,7 +82,7 @@ function Search(
   }, []);
 
   useEffect(() => {
-    drawBoxes();
+    drawDetections();
   }, [inference]);
 
   const videoRef = useCallback(node => {
@@ -48,10 +91,14 @@ function Search(
       navigator.mediaDevices.getUserMedia({video: { facingMode }})
         .then(stream => node.srcObject = stream);
     }
+  }, [facingMode]);
+
+  const imageCanvasRef = useCallback(node => {
+    setImageCanvas(node);
   }, []);
 
-  const canvasRef = useCallback(node => {
-    setCanvas(node);
+  const zonesCanvasRef = useCallback(node => {
+    setZonesCanvas(node);
   }, []);
 
   function enableCamera() {
@@ -65,10 +112,19 @@ function Search(
   }
 
   function onCameraClicked() {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    updateImageCanvas();
+    
+    let imageData = imageCanvas.toDataURL('image/jpeg');
+    searchPhoto(imageData);
+    
+    updateZonesCanvas()
+  }
 
-    canvas.getContext('2d').drawImage(
+  function updateImageCanvas() {
+    imageCanvas.width = video.videoWidth;
+    imageCanvas.height = video.videoHeight;
+
+    imageCanvas.getContext('2d').drawImage(
       video,
       0, 0,
       video.videoWidth,
@@ -79,40 +135,81 @@ function Search(
       track.stop();
     });
 
-    setImage(canvas.toDataURL());
+    setImage(imageCanvas.toDataURL());
     setCameraEnabled(false);
-
-    let imageData = canvas.toDataURL('image/jpeg');
-    searchPhoto(imageData);
   }
 
-  function drawBoxes() {
-    if (!inference || !canvas.getContext) {
+  function updateZonesCanvas() {
+    zonesCanvas.width = imageCanvas.width;
+    zonesCanvas.height = imageCanvas.height;
+
+    const ctx = zonesCanvas.getContext('2d');
+
+    ctx.fillStyle = '#565656';
+    ctx.globalAlpha = 0.7;
+    ctx.fillRect(0, 0,
+      zonesCanvas.width,
+      zonesCanvas.height);
+  }
+
+
+  function drawDetections() {
+    if (!inference || !imageCanvas.getContext) {
       return
     }
 
-    inference.detections.forEach(d => drawBox(d));
+    inference.detections.forEach(d => drawDetection(d));
   }
 
-  function drawBox({box, label, score}) {
-    const ctx = canvas.getContext('2d');
-    const width = Math.floor((box.xMax - box.xMin) * canvas.width);
-    const height = Math.floor((box.yMax - box.yMin) * canvas.height);
-    const x = Math.floor(box.xMin * canvas.width);
-    const y = Math.floor(box.yMin * canvas.height);
-    ctx.lineWidth = 3;
+  function drawDetection({box, label, score}) {
+    // const ctx = imageCanvas.getContext('2d');
+    const width = Math.floor((box.xMax - box.xMin) * imageCanvas.width);
+    const height = Math.floor((box.yMax - box.yMin) * imageCanvas.height);
+    const x = Math.floor(box.xMin * imageCanvas.width);
+    const y = Math.floor(box.yMin * imageCanvas.height);
+    const labelSettings = getLabelSettings(label);
+    drawBox(x, y, width, height, labelSettings.bgColor);
+    drawBoxTextBG(x + 10, y + height - 33, labelSettings.width, 30, labelSettings.bgColor);
+    drawBoxText(label, x + 10, y + height - 10)
+    clearZone(x, y, width, height)
+  }
 
-    if (score > .9) {
-      ctx.strokeStyle = "lightgreen";
-    } else if (score > .8) {
-      ctx.strokeStyle = "yellow";
-    } else {
-      ctx.strokeStyle = "orange";
-    }
-
+  function drawBox(x, y, width, height, color) {
+    const ctx = imageCanvas.getContext('2d');
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'white';
+    ctx.setLineDash([16, 16]);
     ctx.strokeRect(x, y, width, height);
-    ctx.font = '32px sans-serif';
-    ctx.strokeText(label, x + 10, y + height - 10);
+  }
+
+  function drawBoxTextBG(x, y, width, height, color) {
+    const ctx = imageCanvas.getContext('2d');
+
+    // ctx.strokeStyle = getLabelSettings(label).color;
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, width, 30);
+  }
+
+  function drawBoxText(text, x, y) {
+    const ctx = imageCanvas.getContext('2d');
+    // ctx.lineWidth = 0;
+    ctx.font = '24px Roboto';
+    ctx.fillStyle = 'white';
+    ctx.fillText(text, x, y);
+  }
+
+  function clearZone(x, y, width, height) {
+    const ctx = zonesCanvas.getContext('2d');
+    ctx.clearRect(x-3, y-6, width+6, height+6);
+  }
+
+  function onFacingModeClicked() {
+    if (facingMode === 'user') {
+      setFacingMode('environment')
+    } else {
+      setFacingMode('user')
+    }
   }
 
   function renderCamera() {
@@ -121,25 +218,40 @@ function Search(
     }
 
     return (
-      <div className="camera">
-        <div className="img-container">
+      <div className='camera'>
+        <div className='img-container'>
           <video
-            className="camera-preview"
+            className='camera-preview'
             ref={videoRef}
             controls={false}
             autoPlay
             playsInline
           />
+          <div className='horizontal overlay'></div>
+          <div className='vertical overlay'></div>
         </div>
-        <div className="action-container">
-          <div className="button-bar">
-            <Button
-              variant="contained"
-              size="large"
-              className="take-picture-button"
-              onClick={onCameraClicked}
-            ><Camera style={{fontSize: 60}}/>
-            </Button>
+        <div className='action-container'>
+          <div className='button-bar'>
+            <div className='button-container'>
+              <Button
+                variant='contained'
+                size='large'
+                className='choose-camera-button'
+                onClick={onFacingModeClicked}
+              ><FontAwesomeIcon icon={faSync} />
+              </Button>
+            </div>
+            <div className='button-container'>
+              <Button
+                variant='contained'
+                size='large'
+                className='take-picture-button'
+                onClick={onCameraClicked}
+              ><FontAwesomeIcon icon={faCircle} />
+              </Button>
+            </div>
+            <div className='button-container'>
+            </div>
           </div>
         </div>
       </div>
@@ -148,54 +260,48 @@ function Search(
 
 
   function renderSnapshot() {
-    const display = image ? "flex" : "none";
-
-    let inferenceResult = null;
-    if (inferencePending) {
-      inferenceResult = (
-        <div className="inference-result in-progress">
-          <div className="inference-result-line">Loading...</div>
-        </div>);
-    } else if (inference) {
-      if (!inference.detections || inference.detections.length === 0) {
-        inferenceResult = (
-          <div className="inference-result no-logos">
-            <div className="inference-result-line">No Logos Found</div>
-          </div>);
-      } else {
-      inferenceResult = (
-        <div className="inference-result logos">
-          {inference.detections.map((d, index) => <div className="inference-result-line" key={index}>{d.label} <span className="result-score">{Math.floor(d.score * 100)}%</span></div>)}
-        </div>);
-      }
-    }
+    const displayResult = image ? 'flex' : 'none';
+    const displayButtons = inferencePending ? 'none' : 'block';
+    const displayZones = inferencePending ? 'flex' : 'flex';
+    const displayLoading = inferencePending ? 'flex' : 'none';
 
     return (
-      <div className="result" style={{display}}>
-        <div className="img-container">
+      <div className='result' style={{display: displayResult}}>
+        <div className='img-container'>
           <canvas
-            className="search-result"
-            ref={canvasRef}
+            className='result-canvas'
+            ref={imageCanvasRef}
           />
+          <div className='zones overlay' style={{display: displayZones}}>
+            <canvas
+              className='zones-canvas'
+              ref={zonesCanvasRef}
+            />
+          </div>
+          <div className='loading overlay' style={{display: displayLoading}}>
+            <div>
+              <FontAwesomeIcon className='loading-icon' icon={faCircleNotch} spin/>
+            </div>
+            <div className='loading-text'>Loading ...</div>
+          </div>
         </div>
-        <div className="action-container">
-          <div className="button-bar">
+        <div className='action-container' style={{display: displayButtons}}>
+          <div className='button-bar'>
             <Button
-              variant="contained"
-              size="large"
-              className="re-take-picture-button"
+              variant='contained'
+              size='large'
+              className='re-take-picture-button'
               onClick={onCameraToggled}
-            ><Cached style={{fontSize: 60}}/>
+            ><span className='label-word'>Try</span><span className='label-word'>again</span>
             </Button>
           </div>
-          {inferenceResult}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="search">
+    <div className='search'>
       {renderCamera()}
       {renderSnapshot()}
     </div>
@@ -218,3 +324,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Search);
+

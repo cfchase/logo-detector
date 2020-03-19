@@ -2,37 +2,84 @@
   width: 100%;
 
   .camera-preview,
-  .search-result {
-    padding: 1rem;
+  .result-canvas,
+  .zones-canvas {
+    //padding: 1rem;
     color: white;
     max-width: 100%;
     max-height: 100vh;
   }
 
-  .img-container {
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+  }
+
+  .img-container {
+    position: relative;
+  }
+
+  .result .img-container {
+    .overlay.loading{
+      color: white;
+
+      .loading-icon {
+        font-size: 64px;
+        margin-bottom: 24px;
+      }
+      .loading-text {
+        font-size: 24px;
+        font-weight: 600;
+      }
+    }
   }
 
   .button-bar {
     padding: 1rem;
     text-align: center;
 
+    .button-container {
+      min-height: 80px;
+    }
+
+    button.choose-camera-button {
+      height: 48px;
+      width: 48px;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0;
+      border-radius: 24px;
+      background-color: white;
+      text-transform: none;
+      font-size: 28px;
+      font-weight: 600;
+      color: #262626;
+    }
+
     button.take-picture-button {
+      font-size: 52px;
       height: 64px;
       width: 64px;
       padding: 0;
-      border-radius: 50%;
+      border-radius: 30%;
       background-color: white;
     }
 
     button.re-take-picture-button {
-      height: 64px;
-      width: 64px;
       padding: 0;
-      border-radius: 50%;
       background-color: white;
+      text-transform: none;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #262626;
     }
   }
 }
@@ -44,6 +91,20 @@
       justify-content: flex-start;
       align-items: center;
       flex-direction: column;
+
+      .action-container {
+        width: 100%;
+
+        .button-bar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .button-container {
+            min-width: 80px;
+          }
+        }
+      }
     }
 
     .result {
@@ -68,15 +129,38 @@
         }
       }
     }
+
+    .action-container .button-bar button.re-take-picture-button {
+      height: 48px;
+      width: 128px;
+      border-radius: 24px;
+      background-color: white;
+
+      .MuiButton-label {
+        .label-word {
+          margin: 4px;
+        }
+      }
+    }
+
+    //.action-container {
+    //  height: 100vh;
+    //  display: flex;
+    //  justify-content: center;
+    //  align-items: center;
+    //  flex-direction: column;
+    //  overflow: hidden;
+    //}
   }
 }
 
 @media screen and (orientation: landscape) {
   .search {
+    max-height: 375px;
     .camera {
       display: flex;
       justify-content: flex-start;
-      align-items: flex-start;
+      align-items: center;
       flex-direction: row;
     }
 
@@ -101,15 +185,73 @@
           text-align: center;
         }
       }
+
+
+      .action-container .button-bar button.re-take-picture-button {
+        height: 86px;
+        width: 86px;
+        padding: 0;
+        border-radius: 30%;
+        background-color: white;
+
+        .MuiButton-label {
+          flex-direction: column;
+          .label-word {
+            height: 24px;
+            line-height: 24px;
+          }
+        }
+      }
     }
 
+    //.action-container {
+    //  display: flex;
+    //  justify-content: center;
+    //  align-items: center;
+    //  flex-direction: column;
+    //  overflow: hidden;
+    //}
+
     .action-container {
-      max-height: 90vh;
-      display: flex;
-      justify-content: flex-start;
-      align-items: flex-start;
-      flex-direction: column;
-      overflow: hidden;
+      min-height: 100%;
+      height: 100vh;
+      max-height: 375px;
+
+      .button-bar {
+        min-height: 100%;
+        height: 100vh;
+        max-height: 375px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: column-reverse;
+
+        .button-container {
+          min-width: 80px;
+        }
+      }
+    }
+
+    .action-container .button-bar button.re-take-picture-button {
+      height: 86px;
+      width: 86px;
+      padding: 0;
+      border-radius: 30%;
+      background-color: white;
+
+
+      .MuiButton-label {
+        flex-direction: column;
+        .label-word {
+          height: 24px;
+          line-height: 24px;
+        }
+      }
+    }
+
+    .result .action-container .button-bar {
+      justify-content: center;
     }
   }
 }
