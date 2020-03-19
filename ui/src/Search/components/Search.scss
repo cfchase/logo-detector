@@ -3,16 +3,26 @@
 
   .camera-preview,
   .search-result {
-    padding: 1rem;
+    //padding: 1rem;
     color: white;
     max-width: 100%;
     max-height: 100vh;
   }
 
   .img-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative;
+    .camera-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
   }
 
   .button-bar {
@@ -23,16 +33,20 @@
       height: 64px;
       width: 64px;
       padding: 0;
-      border-radius: 50%;
+      border-radius: 30%;
       background-color: white;
     }
 
     button.re-take-picture-button {
-      height: 64px;
-      width: 64px;
+      height: 48px;
+      width: 128px;
       padding: 0;
-      border-radius: 50%;
+      border-radius: 24px;
       background-color: white;
+      text-transform: none;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #262626;
     }
   }
 }
@@ -68,6 +82,14 @@
         }
       }
     }
+    //.action-container {
+    //  height: 100vh;
+    //  display: flex;
+    //  justify-content: center;
+    //  align-items: center;
+    //  flex-direction: column;
+    //  overflow: hidden;
+    //}
   }
 }
 
@@ -76,7 +98,7 @@
     .camera {
       display: flex;
       justify-content: flex-start;
-      align-items: flex-start;
+      align-items: center;
       flex-direction: row;
     }
 
@@ -104,10 +126,10 @@
     }
 
     .action-container {
-      max-height: 90vh;
+      height: 100vh;
       display: flex;
-      justify-content: flex-start;
-      align-items: flex-start;
+      justify-content: center;
+      align-items: center;
       flex-direction: column;
       overflow: hidden;
     }
