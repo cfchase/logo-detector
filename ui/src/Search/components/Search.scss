@@ -27,6 +27,12 @@
     position: relative;
   }
 
+  .camera svg.vertical-camera-border-svg,
+  .camera svg.horizontal-camera-border-svg {
+    max-height: 90%;
+    max-width: 90%;
+  }
+
   .result .img-container {
     .overlay.loading{
       color: white;
@@ -91,6 +97,14 @@
       justify-content: flex-start;
       align-items: center;
       flex-direction: column;
+
+      svg.vertical-camera-border-svg {
+        display: block;
+      }
+
+      svg.horizontal-camera-border-svg {
+        display: none;
+      }
 
       .action-container {
         width: 100%;
@@ -162,6 +176,14 @@
       justify-content: flex-start;
       align-items: center;
       flex-direction: row;
+
+      svg.vertical-camera-border-svg {
+        display: none;
+      }
+
+      svg.horizontal-camera-border-svg {
+        display: block;
+      }
     }
 
     .result {

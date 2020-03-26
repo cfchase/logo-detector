@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Component } from 'react';
 import { connect } from 'react-redux';
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -6,6 +6,8 @@ import { resetSearch, searchPhoto } from '../actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSync, faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
+import {ReactComponent as VerticalCameraBorder} from "./vertical-camera-border.svg";
+import {ReactComponent as HorizontalCameraBorder} from "./horizontal-camera-border.svg";
 
 import './Search.scss';
 
@@ -69,8 +71,6 @@ function Search(
   }) {
   const [image, setImage] = useState(null);
   const [cameraEnabled, setCameraEnabled] = useState(null);
-  const [vVideoOverlay, setVVideoOverlay] = useState(null);
-  const [hVideoOverlay, setHVideoOverlay] = useState(null);
   const [video, setVideo] = useState(null);
   const [imageCanvas, setImageCanvas] = useState(null);
   const [zonesCanvas, setZonesCanvas] = useState(null);
@@ -98,14 +98,6 @@ function Search(
     setImageCanvas(node);
   }, []);
 
-  const vVideoOverlayRef = useCallback(node => {
-    setVVideoOverlay(node);
-  }, []);
-
-  const hVideoOverlayRef = useCallback(node => {
-    setHVideoOverlay(node);
-  }, []);
-
   const zonesCanvasRef = useCallback(node => {
     setZonesCanvas(node);
   }, []);
@@ -124,7 +116,6 @@ function Search(
     updateImageCanvas();
     
     let imageData = imageCanvas.toDataURL('image/jpeg');
-    // searchPhoto(imageData);
     const base64data = imageData.replace(/^data:image\/(png|jpg|jpeg);base64,/, '');
     searchPhoto(base64data);
     
@@ -239,16 +230,10 @@ function Search(
             playsInline
           />
           <div className='horizontal overlay'>
-            <canvas
-              className='horizontal-video-overlay-canvas'
-              ref={hVideoOverlayRef}
-            />
+            <HorizontalCameraBorder className={'horizontal-camera-border-svg'}/>
           </div>
           <div className='vertical overlay'>
-            <canvas
-              className='vertical-video-overlay-canvas'
-              ref={vVideoOverlayRef}
-            />
+            <VerticalCameraBorder className={'vertical-camera-border-svg'}/>
           </div>
         </div>
         <div className='action-container'>
