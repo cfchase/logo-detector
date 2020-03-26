@@ -29,7 +29,7 @@ export const searchReducer = (state = initialState, action) => {
         ...state,
         inferencePending: false,
         inferenceResponse: get(action, "payload.response"),
-        inference: get(action, "payload.response.data.inference"),
+        inference: get(action, "payload.response.data"),
       };
     case SEARCH_PHOTO_REJECTED:
       return {

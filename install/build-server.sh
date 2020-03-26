@@ -6,4 +6,4 @@ SOURCE_REPOSITORY_REF=${SOURCE_REPOSITORY_REF:-master}
 
 echo "Building ${SERVER_IMAGE_REPOSITORY} from ${SOURCE_REPOSITORY_URL} on ${SOURCE_REPOSITORY_REF}"
 
-s2i build ${SOURCE_REPOSITORY_URL} --ref ${SOURCE_REPOSITORY_REF} --context-dir /server docker.io/nodeshift/centos7-s2i-nodejs:12.x ${IMAGE_REPOSITORY}
+s2i build ${SOURCE_REPOSITORY_URL} --ref ${SOURCE_REPOSITORY_REF} --context-dir /server docker.io/centos/python-36-centos7:latest ${IMAGE_REPOSITORY}

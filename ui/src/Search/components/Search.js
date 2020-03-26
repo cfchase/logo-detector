@@ -69,7 +69,8 @@ function Search(
   }) {
   const [image, setImage] = useState(null);
   const [cameraEnabled, setCameraEnabled] = useState(null);
-  const [cameraOverlay, setCameraOverlay] = useState(null);
+  const [vVideoOverlay, setVVideoOverlay] = useState(null);
+  const [hVideoOverlay, setHVideoOverlay] = useState(null);
   const [video, setVideo] = useState(null);
   const [imageCanvas, setImageCanvas] = useState(null);
   const [zonesCanvas, setZonesCanvas] = useState(null);
@@ -97,6 +98,14 @@ function Search(
     setImageCanvas(node);
   }, []);
 
+  const vVideoOverlayRef = useCallback(node => {
+    setVVideoOverlay(node);
+  }, []);
+
+  const hVideoOverlayRef = useCallback(node => {
+    setHVideoOverlay(node);
+  }, []);
+
   const zonesCanvasRef = useCallback(node => {
     setZonesCanvas(node);
   }, []);
@@ -115,7 +124,9 @@ function Search(
     updateImageCanvas();
     
     let imageData = imageCanvas.toDataURL('image/jpeg');
-    searchPhoto(imageData);
+    // searchPhoto(imageData);
+    const base64data = imageData.replace(/^data:image\/(png|jpg|jpeg);base64,/, '');
+    searchPhoto(base64data);
     
     updateZonesCanvas()
   }
@@ -227,8 +238,18 @@ function Search(
             autoPlay
             playsInline
           />
-          <div className='horizontal overlay'></div>
-          <div className='vertical overlay'></div>
+          <div className='horizontal overlay'>
+            <canvas
+              className='horizontal-video-overlay-canvas'
+              ref={hVideoOverlayRef}
+            />
+          </div>
+          <div className='vertical overlay'>
+            <canvas
+              className='vertical-video-overlay-canvas'
+              ref={vVideoOverlayRef}
+            />
+          </div>
         </div>
         <div className='action-container'>
           <div className='button-bar'>

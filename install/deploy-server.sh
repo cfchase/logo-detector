@@ -12,4 +12,7 @@ echo "Deploying ${IMAGE_REPOSITORY}"
 oc process -f "${DIR}/server.yml" \
   -p IMAGE_REPOSITORY=${IMAGE_REPOSITORY} \
   -p REPLICAS=${REPLICAS} \
+  -p OPENMM_HOST=${OPENMM_HOST} \
+  -p OPENMM_USER=${OPENMM_USER} \
+  -p OPENMM_PASSWORD=${OPENMM_PASSWORD} \
   | oc create -f -
