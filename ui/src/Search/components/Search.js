@@ -24,19 +24,19 @@ const useStyles = makeStyles(theme => ({
 const labelSettings = {
   'Dynatrace': {
     bgColor: '#3DB048',
-    width: 107
+    width: 214
   },
   'IBM': {
     bgColor: '#1870C2',
-    width: 42
+    width: 88
   },
   'Intel': {
     bgColor: '#0071C6',
-    width: 49
+    width: 98
   },
   'Anaconda': {
     bgColor: '#3DB048',
-    width: 110
+    width: 220
   },
   'SAS': {
     bgColor: '#007CC2',
@@ -44,11 +44,11 @@ const labelSettings = {
   },
   'Cloudera': {
     bgColor: '#F96703',
-    width: 110
+    width: 220
   },
   'Red Hat': {
     bgColor: '#EE0001',
-    width: 110
+    width: 220
   }
 };
 
@@ -171,8 +171,8 @@ function Search(
     const y = Math.floor(box.yMin * imageCanvas.height);
     const labelSettings = getLabelSettings(label);
     drawBox(x, y, width, height, labelSettings.bgColor);
-    drawBoxTextBG(x + 10, y + height - 33, labelSettings.width, 30, labelSettings.bgColor);
-    drawBoxText(label, x + 10, y + height - 10)
+    drawBoxTextBG(x + 10, y + height - 48, labelSettings.width, 44, labelSettings.bgColor);
+    drawBoxText(label, x + 10, y + height - 10);
     clearZone(x, y, width, height)
   }
 
@@ -190,13 +190,13 @@ function Search(
 
     // ctx.strokeStyle = getLabelSettings(label).color;
     ctx.fillStyle = color;
-    ctx.fillRect(x, y, width, 30);
+    ctx.fillRect(x, y, width, height);
   }
 
   function drawBoxText(text, x, y) {
     const ctx = imageCanvas.getContext('2d');
     // ctx.lineWidth = 0;
-    ctx.font = '24px Roboto';
+    ctx.font = '48px Roboto';
     ctx.fillStyle = 'white';
     ctx.fillText(text, x, y);
   }
