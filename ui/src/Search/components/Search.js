@@ -24,31 +24,31 @@ const useStyles = makeStyles(theme => ({
 const labelSettings = {
   'Dynatrace': {
     bgColor: '#3DB048',
-    width: 107
+    width: 112
   },
   'IBM': {
     bgColor: '#1870C2',
-    width: 42
+    width: 55
   },
   'Intel': {
     bgColor: '#0071C6',
-    width: 49
+    width: 56
   },
   'Anaconda': {
     bgColor: '#3DB048',
-    width: 110
+    width: 120
   },
   'SAS': {
     bgColor: '#007CC2',
-    width: 60
+    width: 70
   },
   'Cloudera': {
     bgColor: '#F96703',
-    width: 110
+    width: 120
   },
   'Red Hat': {
     bgColor: '#EE0001',
-    width: 110
+    width: 120
   }
 };
 
@@ -156,7 +156,7 @@ function Search(
 
 
   function drawDetections() {
-    if (!inference || !imageCanvas.getContext) {
+    if (!inference || !inference.detections || !imageCanvas.getContext) {
       return
     }
 
@@ -171,7 +171,7 @@ function Search(
     const y = Math.floor(box.yMin * imageCanvas.height);
     const labelSettings = getLabelSettings(label);
     drawBox(x, y, width, height, labelSettings.bgColor);
-    drawBoxTextBG(x + 10, y + height - 33, labelSettings.width, 30, labelSettings.bgColor);
+    drawBoxTextBG(x + 5, y + height - 33, labelSettings.width, 30, labelSettings.bgColor);
     drawBoxText(label, x + 10, y + height - 10)
     clearZone(x, y, width, height)
   }
@@ -221,44 +221,42 @@ function Search(
 
     return (
       <div className='camera'>
-        <div className='img-container'>
-          <video
-            className='camera-preview'
-            ref={videoRef}
-            controls={false}
-            autoPlay
-            playsInline
-          />
-          <div className='horizontal overlay'>
-            <HorizontalCameraBorder className={'horizontal-camera-border-svg'}/>
-          </div>
-          <div className='vertical overlay'>
-            <VerticalCameraBorder className={'vertical-camera-border-svg'}/>
+        <div className='img-preview'>
+          <div className='img-container'>
+            <video
+              className='camera-preview'
+              ref={videoRef}
+              controls={false}
+              autoPlay
+              playsInline
+            />
+            <div className='horizontal overlay'>
+              <HorizontalCameraBorder className={'horizontal-camera-border-svg'}/>
+            </div>
+            <div className='vertical overlay'>
+              <VerticalCameraBorder className={'vertical-camera-border-svg'}/>
+            </div>
           </div>
         </div>
-        <div className='action-container'>
-          <div className='button-bar'>
-            <div className='button-container'>
-              <Button
-                variant='contained'
-                size='large'
-                className='choose-camera-button'
-                onClick={onFacingModeClicked}
-              ><FontAwesomeIcon icon={faSync} />
-              </Button>
-            </div>
-            <div className='button-container'>
-              <Button
-                variant='contained'
-                size='large'
-                className='take-picture-button'
-                onClick={onCameraClicked}
-              ><FontAwesomeIcon icon={faCircle} />
-              </Button>
-            </div>
-            <div className='button-container'>
-            </div>
-          </div>
+        <div className='left-button-container button-container'>
+          <Button
+            variant='contained'
+            size='large'
+            className='choose-camera-button'
+            onClick={onFacingModeClicked}
+          ><FontAwesomeIcon icon={faSync}/>
+          </Button>
+        </div>
+        <div className='center-button-container button-container'>
+          <Button
+            variant='contained'
+            size='large'
+            className='take-picture-button'
+            onClick={onCameraClicked}
+          ><FontAwesomeIcon icon={faCircle}/>
+          </Button>
+        </div>
+        <div className='right-button-container button-container'>
         </div>
       </div>
     );
@@ -266,41 +264,55 @@ function Search(
 
 
   function renderSnapshot() {
-    const displayResult = image ? 'flex' : 'none';
-    const displayButtons = inferencePending ? 'none' : 'block';
-    const displayZones = inferencePending ? 'flex' : 'flex';
-    const displayLoading = inferencePending ? 'flex' : 'none';
+    const displayResult = image ? {} : {display: 'none'};
+    const displayButtons = inferencePending ? {display: 'none'} : {};
+    const displayLoading = inferencePending ? {} : {display: 'none'};
+
+    let displayNoLogos;
+    if (!inferencePending && inference && (!inference.detections || inference.detections.length === 0)) {
+      displayNoLogos = {};
+    } else {
+      displayNoLogos = {display: 'none'};
+    }
 
     return (
-      <div className='result' style={{display: displayResult}}>
-        <div className='img-container'>
-          <canvas
-            className='result-canvas'
-            ref={imageCanvasRef}
-          />
-          <div className='zones overlay' style={{display: displayZones}}>
+      <div className='result' style={displayResult}>
+        <div className='img-preview'>
+          <div className='img-container'>
             <canvas
-              className='zones-canvas'
-              ref={zonesCanvasRef}
+              className='result-canvas'
+              ref={imageCanvasRef}
             />
-          </div>
-          <div className='loading overlay' style={{display: displayLoading}}>
-            <div>
-              <FontAwesomeIcon className='loading-icon' icon={faCircleNotch} spin/>
+            <div className='zones overlay'>
+              <canvas
+                className='zones-canvas'
+                ref={zonesCanvasRef}
+              />
             </div>
-            <div className='loading-text'>Loading ...</div>
+            <div className='loading overlay' style={displayLoading}>
+              <div>
+                <FontAwesomeIcon className='loading-icon' icon={faCircleNotch} spin/>
+              </div>
+              <div className='loading-text'>Loading ...</div>
+            </div>
+            <div className='no-logos overlay' style={displayNoLogos}>
+              <div className='no-logos-text'>No Logos</div>
+              <div className='no-logos-text'>Found</div>
+            </div>
           </div>
         </div>
-        <div className='action-container' style={{display: displayButtons}}>
-          <div className='button-bar'>
-            <Button
-              variant='contained'
-              size='large'
-              className='re-take-picture-button'
-              onClick={onCameraToggled}
-            ><span className='label-word'>Try</span><span className='label-word'>again</span>
-            </Button>
-          </div>
+        <div className='left-button-container button-container' style={displayButtons}>
+        </div>
+        <div className='center-button-container button-container' style={displayButtons}>
+          <Button
+            variant='contained'
+            size='large'
+            className='re-take-picture-button'
+            onClick={onCameraToggled}
+          ><span className='label-word'>Try</span><span className='label-word'>again</span>
+          </Button>
+        </div>
+        <div className='right-button-container button-container' style={displayButtons}>
         </div>
       </div>
     );
