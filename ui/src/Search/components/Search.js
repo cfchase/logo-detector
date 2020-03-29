@@ -236,29 +236,25 @@ function Search(
             <VerticalCameraBorder className={'vertical-camera-border-svg'}/>
           </div>
         </div>
-        <div className='action-container'>
-          <div className='button-bar'>
-            <div className='button-container'>
-              <Button
-                variant='contained'
-                size='large'
-                className='choose-camera-button'
-                onClick={onFacingModeClicked}
-              ><FontAwesomeIcon icon={faSync} />
-              </Button>
-            </div>
-            <div className='button-container'>
-              <Button
-                variant='contained'
-                size='large'
-                className='take-picture-button'
-                onClick={onCameraClicked}
-              ><FontAwesomeIcon icon={faCircle} />
-              </Button>
-            </div>
-            <div className='button-container'>
-            </div>
-          </div>
+        <div className='left-button-container button-container'>
+          <Button
+            variant='contained'
+            size='large'
+            className='choose-camera-button'
+            onClick={onFacingModeClicked}
+          ><FontAwesomeIcon icon={faSync}/>
+          </Button>
+        </div>
+        <div className='center-button-container button-container'>
+          <Button
+            variant='contained'
+            size='large'
+            className='take-picture-button'
+            onClick={onCameraClicked}
+          ><FontAwesomeIcon icon={faCircle}/>
+          </Button>
+        </div>
+        <div className='right-button-container button-container'>
         </div>
       </div>
     );
@@ -291,16 +287,18 @@ function Search(
             <div className='loading-text'>Loading ...</div>
           </div>
         </div>
-        <div className='action-container' style={{display: displayButtons}}>
-          <div className='button-bar'>
-            <Button
-              variant='contained'
-              size='large'
-              className='re-take-picture-button'
-              onClick={onCameraToggled}
-            ><span className='label-word'>Try</span><span className='label-word'>again</span>
-            </Button>
-          </div>
+        <div className='left-button-container button-container' style={{display: displayButtons}}>
+        </div>
+        <div className='center-button-container button-container' style={{display: displayButtons}}>
+          <Button
+            variant='contained'
+            size='large'
+            className='re-take-picture-button'
+            onClick={onCameraToggled}
+          ><span className='label-word'>Try</span><span className='label-word'>again</span>
+          </Button>
+        </div>
+        <div className='right-button-container button-container' style={{display: displayButtons}}>
         </div>
       </div>
     );

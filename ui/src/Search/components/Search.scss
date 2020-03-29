@@ -1,15 +1,4 @@
 .search {
-  width: 100%;
-
-  .camera-preview,
-  .result-canvas,
-  .zones-canvas {
-    //padding: 1rem;
-    color: white;
-    max-width: 100%;
-    max-height: 100vh;
-  }
-
   .overlay {
     position: absolute;
     top: 0;
@@ -25,6 +14,7 @@
 
   .img-container {
     position: relative;
+    overflow: hidden;
   }
 
   .camera svg.vertical-camera-border-svg,
@@ -34,13 +24,14 @@
   }
 
   .result .img-container {
-    .overlay.loading{
+    .overlay.loading {
       color: white;
 
       .loading-icon {
         font-size: 64px;
         margin-bottom: 24px;
       }
+
       .loading-text {
         font-size: 24px;
         font-weight: 600;
@@ -48,55 +39,86 @@
     }
   }
 
-  .button-bar {
-    padding: 1rem;
-    text-align: center;
+  .button-container {
+    min-height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    .button-container {
-      min-height: 80px;
-    }
+  button.choose-camera-button {
+    height: 48px;
+    width: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 0;
+    border-radius: 24px;
+    background-color: white;
+    text-transform: none;
+    font-size: 28px;
+    font-weight: 600;
+    color: #262626;
+  }
 
-    button.choose-camera-button {
-      height: 48px;
-      width: 48px;
-      min-width: 48px;
-      min-height: 48px;
-      padding: 0;
-      border-radius: 24px;
-      background-color: white;
-      text-transform: none;
-      font-size: 28px;
-      font-weight: 600;
-      color: #262626;
-    }
+  button.take-picture-button {
+    font-size: 52px;
+    height: 64px;
+    width: 64px;
+    padding: 0;
+    border-radius: 30%;
+    background-color: white;
+  }
 
-    button.take-picture-button {
-      font-size: 52px;
-      height: 64px;
-      width: 64px;
-      padding: 0;
-      border-radius: 30%;
-      background-color: white;
-    }
-
-    button.re-take-picture-button {
-      padding: 0;
-      background-color: white;
-      text-transform: none;
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: #262626;
-    }
+  button.re-take-picture-button {
+    padding: 0;
+    background-color: white;
+    text-transform: none;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #262626;
   }
 }
 
 @media screen and (orientation: portrait) {
   .search {
+    .camera, .result {
+      div.img-container {
+        grid-area: image;
+      }
+
+      div.left-button-container {
+        grid-area: left-button;
+      }
+
+      div.center-button-container {
+        grid-area: center-button;
+      }
+
+      div.right-button-container {
+        grid-area: right-button;
+      }
+
+      display: grid;
+      grid-gap: 0;
+      grid-template-areas: "image" "left-button" "center-button" "right-button";
+      min-height: 100vh;
+      min-width: 100vw;
+      grid-template: "image image image" 1fr "left-button center-button right-button" 120px
+                        / 1fr 1fr 1fr;
+
+    }
+
     .camera {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      flex-direction: column;
+      .img-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .camera-preview {
+          min-width: 100%;
+          min-height: 100%;
+          //object-fit: cover;
+        }
+      }
 
       svg.vertical-camera-border-svg {
         display: block;
@@ -106,18 +128,8 @@
         display: none;
       }
 
-      .action-container {
-        width: 100%;
-
-        .button-bar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-
-          .button-container {
-            min-width: 80px;
-          }
-        }
+      .button-container {
+        min-width: 80px;
       }
     }
 
@@ -144,7 +156,7 @@
       }
     }
 
-    .action-container .button-bar button.re-take-picture-button {
+    button.re-take-picture-button {
       height: 48px;
       width: 128px;
       border-radius: 24px;
@@ -156,26 +168,41 @@
         }
       }
     }
-
-    //.action-container {
-    //  height: 100vh;
-    //  display: flex;
-    //  justify-content: center;
-    //  align-items: center;
-    //  flex-direction: column;
-    //  overflow: hidden;
-    //}
   }
 }
 
 @media screen and (orientation: landscape) {
   .search {
-    max-height: 375px;
     .camera {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      flex-direction: row;
+      div.img-container {
+        grid-area: image;
+      }
+
+      div.left-button-container {
+        grid-area: left-button;
+      }
+
+      div.center-button-container {
+        grid-area: center-button;
+      }
+
+      div.right-button-container {
+        grid-area: right-button;
+      }
+
+      display: grid;
+      grid-gap: 0;
+      grid-template-areas: "image" "left-button" "center-button" "right-button";
+      height: 100vh;
+      width: 100vw;
+      grid-template: "image right-button" 1fr "image center-button" 1fr "image left-button" 1fr
+                        / 1fr 120px;
+
+      .camera-preview {
+        min-width: 100%;
+        min-height: 100%;
+      }
+
 
       svg.vertical-camera-border-svg {
         display: none;
@@ -207,55 +234,13 @@
           text-align: center;
         }
       }
-
-
-      .action-container .button-bar button.re-take-picture-button {
-        height: 86px;
-        width: 86px;
-        padding: 0;
-        border-radius: 30%;
-        background-color: white;
-
-        .MuiButton-label {
-          flex-direction: column;
-          .label-word {
-            height: 24px;
-            line-height: 24px;
-          }
-        }
-      }
     }
 
-    //.action-container {
-    //  display: flex;
-    //  justify-content: center;
-    //  align-items: center;
-    //  flex-direction: column;
-    //  overflow: hidden;
-    //}
-
-    .action-container {
-      min-height: 100%;
-      height: 100vh;
-      max-height: 375px;
-
-      .button-bar {
-        min-height: 100%;
-        height: 100vh;
-        max-height: 375px;
-
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-direction: column-reverse;
-
-        .button-container {
-          min-width: 80px;
-        }
-      }
+    .button-container {
+      min-width: 80px;
     }
 
-    .action-container .button-bar button.re-take-picture-button {
+    button.re-take-picture-button {
       height: 86px;
       width: 86px;
       padding: 0;
@@ -265,15 +250,12 @@
 
       .MuiButton-label {
         flex-direction: column;
+
         .label-word {
           height: 24px;
           line-height: 24px;
         }
       }
-    }
-
-    .result .action-container .button-bar {
-      justify-content: center;
     }
   }
 }
