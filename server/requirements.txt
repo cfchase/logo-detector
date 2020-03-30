@@ -1,9 +1,6 @@
-boto3
 eventlet
 flask
 gunicorn
 werkzeug
-numpy==1.17.4
-tensorflow==2.0.0b1
 pillow==6.2.1
-protobuf==3.10.0
+sasctl

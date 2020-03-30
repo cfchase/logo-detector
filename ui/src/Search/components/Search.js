@@ -165,10 +165,15 @@ function Search(
 
   function drawDetection({box, label, score}) {
     // const ctx = imageCanvas.getContext('2d');
-    const width = Math.floor((box.xMax - box.xMin) * imageCanvas.width);
-    const height = Math.floor((box.yMax - box.yMin) * imageCanvas.height);
-    const x = Math.floor(box.xMin * imageCanvas.width);
-    const y = Math.floor(box.yMin * imageCanvas.height);
+    // const width = Math.floor((box.xMax - box.xMin) * imageCanvas.width);
+    // const height = Math.floor((box.yMax - box.yMin) * imageCanvas.height);
+    // const x = Math.floor(box.xMin * imageCanvas.width);
+    // const y = Math.floor(box.yMin * imageCanvas.height);
+    const width = Math.ceil((box.xMax - box.xMin));
+    const height = Math.ceil((box.yMax - box.yMin));
+    const x = Math.floor(box.xMin);
+    const y = Math.floor(box.yMin);
+
     const labelSettings = getLabelSettings(label);
     drawBox(x, y, width, height, labelSettings.bgColor);
     drawBoxTextBG(x + 10, y + height - 33, labelSettings.width, 30, labelSettings.bgColor);
@@ -221,19 +226,21 @@ function Search(
 
     return (
       <div className='camera'>
-        <div className='img-container'>
-          <video
-            className='camera-preview'
-            ref={videoRef}
-            controls={false}
-            autoPlay
-            playsInline
-          />
-          <div className='horizontal overlay'>
-            <HorizontalCameraBorder className={'horizontal-camera-border-svg'}/>
-          </div>
-          <div className='vertical overlay'>
-            <VerticalCameraBorder className={'vertical-camera-border-svg'}/>
+        <div className='img-preview'>
+          <div className='img-container'>
+            <video
+              className='camera-preview'
+              ref={videoRef}
+              controls={false}
+              autoPlay
+              playsInline
+            />
+            <div className='horizontal overlay'>
+              <HorizontalCameraBorder className={'horizontal-camera-border-svg'}/>
+            </div>
+            <div className='vertical overlay'>
+              <VerticalCameraBorder className={'vertical-camera-border-svg'}/>
+            </div>
           </div>
         </div>
         <div className='action-container'>
@@ -273,22 +280,24 @@ function Search(
 
     return (
       <div className='result' style={{display: displayResult}}>
-        <div className='img-container'>
-          <canvas
-            className='result-canvas'
-            ref={imageCanvasRef}
-          />
-          <div className='zones overlay' style={{display: displayZones}}>
+        <div className='img-preview'>
+          <div className='img-container'>
             <canvas
-              className='zones-canvas'
-              ref={zonesCanvasRef}
+              className='result-canvas'
+              ref={imageCanvasRef}
             />
-          </div>
-          <div className='loading overlay' style={{display: displayLoading}}>
-            <div>
-              <FontAwesomeIcon className='loading-icon' icon={faCircleNotch} spin/>
+            <div className='zones overlay' style={{display: displayZones}}>
+              <canvas
+                className='zones-canvas'
+                ref={zonesCanvasRef}
+              />
             </div>
-            <div className='loading-text'>Loading ...</div>
+            <div className='loading overlay' style={{display: displayLoading}}>
+              <div>
+                <FontAwesomeIcon className='loading-icon' icon={faCircleNotch} spin/>
+              </div>
+              <div className='loading-text'>Loading ...</div>
+            </div>
           </div>
         </div>
         <div className='action-container' style={{display: displayButtons}}>
