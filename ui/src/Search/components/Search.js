@@ -22,33 +22,21 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const labelSettings = {
-  'Dynatrace': {
-    bgColor: '#3DB048',
-    width: 112
-  },
-  'IBM': {
-    bgColor: '#1870C2',
-    width: 55
-  },
-  'Intel': {
-    bgColor: '#0071C6',
-    width: 56
-  },
   'Anaconda': {
     bgColor: '#3DB048',
-    width: 120
+    width: 90
   },
   'SAS': {
     bgColor: '#007CC2',
-    width: 79
+    width: 43
   },
   'Cloudera': {
     bgColor: '#F96703',
-    width: 120
+    width: 89
   },
   'Red Hat': {
     bgColor: '#EE0001',
-    width: 107
+    width: 75
   }
 };
 
@@ -164,16 +152,20 @@ function Search(
   }
 
   function drawDetection({box, label, score}) {
-    // const ctx = imageCanvas.getContext('2d');
+    const drawScore = true;
+    const textBgHeight = 24;
+    const scoreWidth = drawScore ? 40 : 0;
+    const text = drawScore ? `${label} ${Math.floor(score * 100)}%` : label;
+
     const width = Math.floor((box.xMax - box.xMin) * imageCanvas.width);
     const height = Math.floor((box.yMax - box.yMin) * imageCanvas.height);
     const x = Math.floor(box.xMin * imageCanvas.width);
     const y = Math.floor(box.yMin * imageCanvas.height);
     const labelSettings = getLabelSettings(label);
     drawBox(x, y, width, height, labelSettings.bgColor);
-    drawBoxTextBG(x + 5, y + height - 28, labelSettings.width, 24, labelSettings.bgColor);
-    drawBoxText(`${label} ${Math.floor(score * 100)}%`, x + 10, y + height - 10);
-    clearZone(x + 5, y + height - 28, labelSettings.width, 24);
+    drawBoxTextBG(x + 5, y + height - textBgHeight - 4, labelSettings.width + scoreWidth, textBgHeight, labelSettings.bgColor);
+    drawBoxText(text, x + 10, y + height - 10);
+    clearZone(x + 5, y + height - textBgHeight - 4, labelSettings.width + scoreWidth, textBgHeight);
     clearZone(x, y, width, height)
   }
 
@@ -196,8 +188,7 @@ function Search(
 
   function drawBoxText(text, x, y) {
     const ctx = imageCanvas.getContext('2d');
-    // ctx.lineWidth = 0;
-    ctx.font = '18px Roboto';
+    ctx.font = '18px Overpass';
     ctx.fillStyle = 'white';
     ctx.fillText(text, x, y);
   }
