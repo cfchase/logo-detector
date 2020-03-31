@@ -8,4 +8,8 @@ IMAGE_REPOSITORY=${SERVER_IMAGE_REPOSITORY:-quay.io/cfchase/logo-detector-server
 oc project ${PROJECT}
 echo "Undeploying ${IMAGE_REPOSITORY}"
 
-oc process -f ${DIR}/server.yml | oc delete -f -
+oc process -f "${DIR}/server.yml" \
+  -p OPENMM_HOST=dontcare \
+  -p OPENMM_USER=dontcare \
+  -p OPENMM_PASSWORD=dontcare \
+  | oc delete -f -

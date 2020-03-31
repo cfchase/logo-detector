@@ -1,2 +1,2 @@
-from .inference.inference import run_inference_for_single_image, run_inference_for_base64
+from .inference.inference import run_inference_for_base64
 

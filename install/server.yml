@@ -14,12 +14,22 @@ parameters:
   - name: SECRET_NAME
     value: logo-detector
     required: true
+  - name: CONFIG_MAP_NAME
+    value: logo-detector
+    required: true
   - name: OPENMM_HOST
     required: true
   - name: OPENMM_USER
     required: true
   - name: OPENMM_PASSWORD
     required: true
+  - name: OPENMM_MODEL
+    value: logo_detector_torch_latest
+    required: true
+  - name: OPENMM_LABELS
+    value: '["SAS", "Red Hat", "Anaconda", "Cloudera"]'
+  - name: OPENMM_MIN_SCORES
+    value: "[0,0,0,0]"
   - name: ROUTE_NAME
     value: inference
     required: true
@@ -56,6 +66,13 @@ objects:
       OPENMM_USER: ${OPENMM_USER}
       OPENMM_PASSWORD: ${OPENMM_PASSWORD}
 
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: ${CONFIG_MAP_NAME}
+    data:
+      OPENMM_MODEL: ${OPENMM_MODEL}
+      OPENMM_SCORES: ${OPENMM_SCORES}
 
   - apiVersion: v1
     kind: DeploymentConfig
@@ -84,6 +101,8 @@ objects:
               envFrom:
                 - secretRef:
                     name: ${SECRET_NAME}
+                - configMapRef:
+                    name: ${CONFIG_MAP_NAME}
               image: ${IMAGE_REPOSITORY}
               imagePullPolicy: Always
               name: ${APPLICATION_NAME}
