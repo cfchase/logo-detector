@@ -46,13 +46,13 @@ parameters:
     value: quay.io/cfchase/logo-detector-server:latest
     required: true
   - name: CONTAINER_REQUEST_CPU
-    value: '4'
+    value: '1'
   - name: CONTAINER_REQUEST_MEMORY
-    value: 4Gi
+    value: 2Gi
   - name: CONTAINER_LIMIT_CPU
-    value: '4'
+    value: '1'
   - name: CONTAINER_LIMIT_MEMORY
-    value: 8Gi
+    value: 4Gi
 
 
 objects:
