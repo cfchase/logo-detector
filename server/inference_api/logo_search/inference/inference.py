@@ -53,5 +53,54 @@ def transform_openmm_detections(mm_response):
             'label': label,
             'score': detection_scores[i],
         }
+
         boxes.append(d)
+    
+    boxes = process_boxes(boxes, postprocess=False)
+
     return boxes
+
+def process_boxes(boxes, postprocess=False):
+    if not postprocess:
+        return boxes
+
+    results = {}
+    for i, d in enumerate(boxes):
+        detection_class = d['class']
+        detection_score = d['score']
+
+        if detection_class not in results:
+            results[detection_class] = d
+
+        if detection_score > results[detection_class]['score']:
+            results[detection_class] = d
+
+    results = list(results.values())
+
+    return results
+
+
+def iou(bbox1, bbox2):
+    #Note: no need to scale the dimensions by actual image size
+    #can use normalized/relative coordinates
+
+    x_list = [bbox1['xMin'], bbox1['xMax'], bbox2['xMin'], bbox2['xMax']]
+    y_list = [bbox1['yMin'], bbox1['yMax'], bbox2['yMin'], bbox2['yMax']]
+
+    #check for non-intersection:
+    if bbox1['xMax'] < bbox2['xMin'] or bbox2['xMax'] < bbox1['yMin']:
+        return 0
+    if bbox1['yMax'] < bbox2['yMin'] or bbox2['yMax'] < bbox1['yMin']:
+        return 0
+
+    x_list_sorted = sorted(x_list)
+    y_list_sorted = sorted(y_list)
+
+    area_intersect = (x_list_sorted[2] - x_list_sorted[1]) * (y_list_sorted[2]-y_list_sorted[1])
+
+    area_box1 = (bbox1['xMax']-bbox1['xMin'])*(bbox1['yMax']-bbox1['yMin'])
+    area_box2 = (bbox2['xMax']-bbox2['xMin'])*(bbox2['yMax']-bbox2['yMin'])
+
+    iou = area_intersect / (area_box1 + area_box2 - area_intersect)
+
+    return iou
