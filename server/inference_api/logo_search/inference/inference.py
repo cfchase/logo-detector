@@ -53,5 +53,69 @@ def transform_openmm_detections(mm_response):
             'label': label,
             'score': detection_scores[i],
         }
+
         boxes.append(d)
+    
+    boxes = process_boxes(boxes, postprocess=True)
+
     return boxes
+
+def process_boxes(boxes, postprocess=False):
+    '''
+    if big overlap between cloudera and sas (iou), then pick cloudera
+    WARNING: IOU THRESH should be moved to config
+    '''
+    IOU_THRESH = 0.50
+
+    if not postprocess:
+        return boxes
+
+    results, boxes_cloudera, boxes_sas = [], [], []
+    for d in boxes:
+        print(d)
+        if d['label']=='Cloudera':
+            boxes_cloudera.append(d)
+        elif d['label']=='SAS':
+            boxes_sas.append(d)
+        else:
+            results.append(d)
+    
+    #quadratic loop but over tiny arrays
+    for s in boxes_sas:
+        found_overlap = False
+
+        for c in boxes_cloudera:
+            if calc_iou(s['box'], c['box']) > IOU_THRESH:
+                results.append(c)
+                found_overlap = True
+                break
+        if not found_overlap:
+            results.append(s) #if s didn't overlap with any c, keep s
+
+    return results
+
+
+def calc_iou(bbox1, bbox2):
+    #Note: no need to scale the dimensions by actual image size
+    #can use normalized/relative coordinates
+
+    x_list = [bbox1['xMin'], bbox1['xMax'], bbox2['xMin'], bbox2['xMax']]
+    y_list = [bbox1['yMin'], bbox1['yMax'], bbox2['yMin'], bbox2['yMax']]
+
+    #check for non-intersection:
+    if bbox1['xMax'] < bbox2['xMin'] or bbox2['xMax'] < bbox1['yMin']:
+        return 0
+    if bbox1['yMax'] < bbox2['yMin'] or bbox2['yMax'] < bbox1['yMin']:
+        return 0
+
+    x_list_sorted = sorted(x_list)
+    y_list_sorted = sorted(y_list)
+
+    area_intersect = (x_list_sorted[2] - x_list_sorted[1]) * (y_list_sorted[2]-y_list_sorted[1])
+
+    area_box1 = (bbox1['xMax']-bbox1['xMin'])*(bbox1['yMax']-bbox1['yMin'])
+    area_box2 = (bbox2['xMax']-bbox2['xMin'])*(bbox2['yMax']-bbox2['yMin'])
+
+    iou = area_intersect / (area_box1 + area_box2 - area_intersect)
+
+    return iou
