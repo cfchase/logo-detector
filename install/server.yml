@@ -72,7 +72,8 @@ objects:
       name: ${CONFIG_MAP_NAME}
     data:
       OPENMM_MODEL: ${OPENMM_MODEL}
-      OPENMM_SCORES: ${OPENMM_SCORES}
+      OPENMM_LABELS: ${OPENMM_LABELS}
+      OPENMM_MIN_SCORES: ${OPENMM_MIN_SCORES}
 
   - apiVersion: v1
     kind: DeploymentConfig

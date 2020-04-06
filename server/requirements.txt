@@ -4,3 +4,4 @@ gunicorn
 werkzeug
 pillow==6.2.1
 sasctl
+numpy
