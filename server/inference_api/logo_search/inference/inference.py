@@ -24,7 +24,6 @@ def transform_openmm_detections(mm_response):
     labels = json.loads(os.getenv('OPENMM_LABELS', '["SAS", "Red Hat", "Anaconda", "Cloudera"]'))
     min_scores = json.loads(os.getenv('OPENMM_MIN_SCORES', '[0,0,0,0]'))
 
-    print('*************************')
     print(mm_response.get('DETECTION_BOXES_NORM'))
     print(mm_response.get('DETECTION_CLASSES'))
     print(mm_response.get('DETECTION_LABELS'))
