@@ -24,6 +24,7 @@ def transform_openmm_detections(mm_response):
     labels = json.loads(os.getenv('OPENMM_LABELS', '["SAS", "Red Hat", "Anaconda", "Cloudera"]'))
     min_scores = json.loads(os.getenv('OPENMM_MIN_SCORES', '[0,0,0,0]'))
 
+    print('*************************')
     print(mm_response.get('DETECTION_BOXES_NORM'))
     print(mm_response.get('DETECTION_CLASSES'))
     print(mm_response.get('DETECTION_LABELS'))
@@ -56,31 +57,46 @@ def transform_openmm_detections(mm_response):
 
         boxes.append(d)
     
-    boxes = process_boxes(boxes, postprocess=False)
+    boxes = process_boxes(boxes, postprocess=True)
 
     return boxes
 
 def process_boxes(boxes, postprocess=False):
+    '''
+    if big overlap between cloudera and sas (iou), then pick cloudera
+    WARNING: IOU THRESH should be moved to config
+    '''
+    IOU_THRESH = 0.50
+
     if not postprocess:
         return boxes
 
-    results = {}
-    for i, d in enumerate(boxes):
-        detection_class = d['class']
-        detection_score = d['score']
+    results, boxes_cloudera, boxes_sas = [], [], []
+    for d in boxes:
+        print(d)
+        if d['label']=='Cloudera':
+            boxes_cloudera.append(d)
+        elif d['label']=='SAS':
+            boxes_sas.append(d)
+        else:
+            results.append(d)
+    
+    #quadratic loop but over tiny arrays
+    for s in boxes_sas:
+        found_overlap = False
 
-        if detection_class not in results:
-            results[detection_class] = d
-
-        if detection_score > results[detection_class]['score']:
-            results[detection_class] = d
-
-    results = list(results.values())
+        for c in boxes_cloudera:
+            if calc_iou(s['box'], c['box']) > IOU_THRESH:
+                results.append(c)
+                found_overlap = True
+                break
+        if not found_overlap:
+            results.append(s) #if s didn't overlap with any c, keep s
 
     return results
 
 
-def iou(bbox1, bbox2):
+def calc_iou(bbox1, bbox2):
     #Note: no need to scale the dimensions by actual image size
     #can use normalized/relative coordinates
 
