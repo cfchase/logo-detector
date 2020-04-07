@@ -4,23 +4,30 @@ import json
 from sasctl.services import microanalytic_score as mas
 from sasctl import Session
 
+import base64
+from io import BytesIO
+from PIL import Image
+import numpy as np
+import pdb
 
 def run_inference_for_base64(base64img):
     host = os.getenv('OPENMM_HOST', '')
     user = os.getenv('OPENMM_USER', '')
     password = os.getenv('OPENMM_PASSWORD', '')
     model = os.getenv('OPENMM_MODEL', '')
-    try:
+    try: 
+        img = np.array(Image.open(BytesIO(base64.decodebytes(base64img.encode()))))
+
         with Session(host, user, password, verify_ssl=False, protocol='http'):
             mod = mas.get_module(model)
             response = mas.execute_module_step(mod, 'score', image_names='test_image', image_strings=base64img)
-            return transform_openmm_detections(response)
+            return transform_openmm_detections(response, img=img)
     except:
         e = sys.exc_info()[0]
         print(e)
 
 
-def transform_openmm_detections(mm_response):
+def transform_openmm_detections(mm_response, img=None):
     labels = json.loads(os.getenv('OPENMM_LABELS', '["SAS", "Red Hat", "Anaconda", "Cloudera"]'))
     min_scores = json.loads(os.getenv('OPENMM_MIN_SCORES', '[0,0,0,0]'))
 
@@ -56,11 +63,11 @@ def transform_openmm_detections(mm_response):
 
         boxes.append(d)
     
-    boxes = process_boxes(boxes, postprocess=True)
+    boxes = process_boxes(boxes, img=img, postprocess=True)
 
     return boxes
 
-def process_boxes(boxes, postprocess=False):
+def process_boxes(boxes, img=None, postprocess=False):
     '''
     if big overlap between cloudera and sas (iou), then pick cloudera
     WARNING: IOU THRESH should be moved to config
@@ -72,7 +79,6 @@ def process_boxes(boxes, postprocess=False):
 
     results, boxes_cloudera, boxes_sas = [], [], []
     for d in boxes:
-        print(d)
         if d['label']=='Cloudera':
             boxes_cloudera.append(d)
         elif d['label']=='SAS':
@@ -92,7 +98,46 @@ def process_boxes(boxes, postprocess=False):
         if not found_overlap:
             results.append(s) #if s didn't overlap with any c, keep s
 
+    if img is None:
+        return results
+
+    #color profile check
+    width = img.shape[1]
+    height = img.shape[0]
+    for d in results:
+        if d['label']=='SAS':
+            if check_cloudera(img, d):
+                print('Switching label')
+                d['label'] = 'Cloudera'
+
     return results
+
+def check_cloudera(img_array, d):
+    #quick and dirty check
+
+    width = img_array.shape[1]
+    height = img_array.shape[0]
+
+    x_min_abs = int(d['box']['xMin'] * width)
+    x_max_abs = int(d['box']['xMax'] * width)
+    y_min_abs = int(d['box']['yMin'] * height)
+    y_max_abs = int(d['box']['yMax'] * height)
+
+    if x_min_abs > width: x_min_abs = width
+    if x_max_abs > width: x_max_abs = width
+    if y_min_abs > height: y_min_abs = height
+    if y_max_abs > height: y_max_abs = height
+
+    img_subarray = img_array[y_min_abs:y_max_abs, x_min_abs:x_max_abs,:]
+
+    B_mean = img_subarray[:,:,2].mean()
+    R_mean = img_subarray[:,:,0].mean()
+
+    print('Ratio: ', R_mean/B_mean)
+
+    if R_mean/B_mean > 1.05:
+        return True
+    return False
 
 
 def calc_iou(bbox1, bbox2):
