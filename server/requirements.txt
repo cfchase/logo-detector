@@ -2,6 +2,6 @@ eventlet
 flask
 gunicorn
 werkzeug
-pillow==6.2.1
+pillow==8.1.1
 sasctl
 numpy
